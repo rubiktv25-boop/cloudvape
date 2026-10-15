@@ -486,7 +486,7 @@ function tagsHtml(p){
 }
 function toast(t){ const el = $('#toast'); el.innerHTML = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(()=>el.classList.remove('show'), 3000); }
 function empty(i, h, t, btn=''){ return `<div class="empty"><div class="ei glass">${ic(i)}</div><h3>${h}</h3><div>${t}</div>${btn?`<div style="margin-top:18px">${btn}</div>`:''}</div>`; }
-function head(title, sub='', right='<div class="ph"></div>'){ return `<div class="phead"><button class="ibtn glass" onclick="A.back()">${ic('back')}</button><div class="t">${title}${sub?`<small>${sub}</small>`:''}</div>${right}</div>`; }
+function pageHead(title, sub='', right='<div class="ph"></div>'){ return `<div class="phead"><button class="ibtn glass" onclick="A.back()">${ic('back')}</button><div class="t">${title}${sub?`<small>${sub}</small>`:''}</div>${right}</div>`; }
 const sw = (on, act) => `<button class="toggle ${on?'on':''}" onclick="${act}"></button>`;
 
 /* ================= БАЛЛЫ, ЛОГ, УВЕДОМЛЕНИЯ ================= */
@@ -616,7 +616,7 @@ function curV(){ const p = P(PS.id); return p.variants.find(x=>ATTRS.every(([k])
 const attrVals = (p, a) => [...new Set(p.variants.map(x=>x[a]).filter(x=>x!=null&&x!==''))];
 const canReview = pid => DB.orders.some(o=>o.client===ME && o.status===4 && o.items.some(i=>i.pid===pid)) && !reviews(pid).some(x=>x.cid===ME);
 function pProduct(){
-  const p = P(PS.id); if (!p) return head('Товар') + empty('box','Товар не найден','');
+  const p = P(PS.id); if (!p) return pageHead('Товар') + empty('box','Товар не найден','');
   const v = curV(), r = rating(p.id), price = vPrice(p,v);
   const inCart = S.cart.filter(i=>i.vid===v.id).reduce((a,i)=>a+i.qty,0), left = v.stock - inCart;
   const sels = ATTRS.map(([a,label]) => {
@@ -631,7 +631,7 @@ function pProduct(){
     }).join('')}</div>`;
   }).join('');
   const revs = reviews(p.id);
-  return head(esc(p.brand), esc(catName(p.cat)), `<button class="ibtn glass ${S.fav.includes(p.id)?'on':''}" onclick="A.fav(${p.id})">${ic('heart')}</button>`) +
+  return pageHead(esc(p.brand), esc(catName(p.cat)), `<button class="ibtn glass ${S.fav.includes(p.id)?'on':''}" onclick="A.fav(${p.id})">${ic('heart')}</button>`) +
   `<div class="hero glass">${art(p,true)}${tagsHtml(p)}</div>
   <h2>${esc(p.name)}</h2>
   <div class="rate" style="font-size:14px">${ic('star')} ${r.avg||'нет оценок'} <span>· отзывов: ${r.n}</span></div>
@@ -699,7 +699,7 @@ const delCost = () => CO.method==='delivery' && CO.city!==G.freeCity ? +G.delive
 function pCheckout(){
   const c = calc(delCost());
   const seg = (k, val, l) => `<button class="${CO[k]===val?'on':''}" onclick="A.co('${k}','${val}')">${l}</button>`;
-  return head('Оформление') +
+  return pageHead('Оформление') +
   `<div class="sect">Получатель</div>
   <div class="form glass">
     <input class="inp" placeholder="Имя" value="${esc(CO.name)}" oninput="CO.name=this.value">
@@ -743,7 +743,7 @@ function pSuccess({id}){
 const needReview = o => o.status===4 && o.items.some(i=>canReview(i.pid));
 function pOrders(){
   const os = myOrders();
-  return head('Мои заказы') + (os.length ? os.map(o=>`<button class="oc glass" onclick="A.goOrder(${o.id})">
+  return pageHead('Мои заказы') + (os.length ? os.map(o=>`<button class="oc glass" onclick="A.goOrder(${o.id})">
     <div class="oc-h"><span>Заказ №${o.id}</span><span class="pill ${pillCls(o)}">${stName(o)}</span></div>
     <div class="oc-m"><span>${fmt(o.ts)} · ${o.items.reduce((a,i)=>a+i.qty,0)} шт.</span><b style="color:var(--text)">${rub(o.total)}</b></div>
     ${needReview(o)?`<div class="oc-r">★ Оцените товары и получите баллы</div>`:''}</button>`).join('')
@@ -766,10 +766,10 @@ function orderRows(o, admin){
   </div>`;
 }
 function pOrder({id}){
-  const o = DB.orders.find(x=>x.id===id); if (!o) return head('Заказ');
+  const o = DB.orders.find(x=>x.id===id); if (!o) return pageHead('Заказ');
   const courier = o.status===3 && o.method==='delivery' && o.courier;
   const cs = staffBy(o.courier);
-  return head(`Заказ №${o.id}`, fmt(o.ts)) + timeline(o) +
+  return pageHead(`Заказ №${o.id}`, fmt(o.ts)) + timeline(o) +
   `${o.status!==-1 && o.status<4 ? `<button class="btn primary wide" style="margin-top:12px" onclick="A.chat('${o.id}')">${ic('chat')} Чат с ${courier?'курьером':'оператором'}</button>` : ''}
   ${o.pay==='card' && o.status>=1 && o.status<4 && !o.paid ? `<div class="box glass" style="margin-top:12px"><b>Реквизиты для перевода</b><p class="desc" style="margin-top:6px">${esc(G.card)}<br>Сумма: <b style="color:var(--text)">${rub(o.total)}</b>. В комментарии к переводу укажите №${o.id}.</p></div>`:''}
   <div class="sect">Товары</div>
@@ -800,7 +800,7 @@ function chatHtml(key, staffSide){
 function pChat({key}){
   const o = DB.orders.find(x=>String(x.id)===key);
   const cs = o && o.status===3 && o.method==='delivery' && staffBy(o.courier);
-  return head(cs ? 'Курьер '+esc(cs.name) : 'Оператор', o ? `Заказ №${o.id}` : 'Поддержка ' + esc(G.name)) + chatHtml(key, false);
+  return pageHead(cs ? 'Курьер '+esc(cs.name) : 'Оператор', o ? `Заказ №${o.id}` : 'Поддержка ' + esc(G.name)) + chatHtml(key, false);
 }
 
 /* ---------- профиль ---------- */
@@ -832,7 +832,7 @@ function vProfile(){
 }
 function pPoints(){
   const c = me();
-  return head('Баллы', `Баланс: ${c.bonus}`) + `<div class="box glass">
+  return pageHead('Баллы', `Баланс: ${c.bonus}`) + `<div class="box glass">
     <div class="info-row">${ic('coins')}<span class="x">Кэшбэк ${G.cashback}% с каждого выполненного заказа</span></div>
     <div class="info-row">${ic('card')}<span class="x">Баллами можно оплатить до ${G.maxBonus}% заказа, 1 балл = 1 руб.</span></div>
     ${G.reviewBonus?`<div class="info-row">${ic('star')}<span class="x">+${G.reviewBonus} баллов за отзыв о купленном товаре</span></div>`:''}
@@ -845,7 +845,7 @@ function pRef(){
   const c = me(), inv = invitedBy(ME), done = inv.filter(x=>x.refRewarded);
   const earned = c.ledger.filter(l=>/^Друг /.test(l.r)).reduce((a,l)=>a+l.n,0);
   const mask = n => n ? n[0] + '•••' + (n.length>1?n.slice(-1):'') : 'Друг';
-  return head('Приведи друга') + `<div class="box glass">
+  return pageHead('Приведи друга') + `<div class="box glass">
     <p class="desc" style="color:var(--text);font-weight:600">Как это работает</p>
     <div class="info-row">${ic('share')}<span class="x">Отправьте другу свою ссылку</span></div>
     <div class="info-row">${ic('gift')}<span class="x">Друг сразу получает <b>${G.refFriend} баллов</b> на первый заказ</span></div>
@@ -865,7 +865,7 @@ function pRef(){
 }
 function pMyData(){
   const p = me();
-  return head('Мои данные') + `<div class="form glass">
+  return pageHead('Мои данные') + `<div class="form glass">
     <input class="inp" id="d-name" placeholder="Имя" value="${esc(p.name)}">
     <input class="inp" id="d-phone" type="tel" placeholder="Телефон" value="${esc(p.phone)}">
     <select class="inp" id="d-city">${G.cities.map(x=>`<option ${x===p.city?'selected':''}>${esc(x)}</option>`).join('')}</select>
@@ -875,7 +875,7 @@ function pMyData(){
 }
 function pAbout(){
   const r = (i,t) => `<div class="info-row">${ic(i)}<span class="x">${t}</span></div>`;
-  return head('О магазине') + `<div class="box glass">
+  return pageHead('О магазине') + `<div class="box glass">
     ${r('clock',esc(G.hours))}${G.pickupOn&&G.pickup?r('pin','Самовывоз: '+esc(G.pickup)):r('truck','Работаем только на доставку')}
     ${G.phone?r('phone',esc(G.phone)):''}
     ${r('truck',`Доставка по городу ${esc(G.freeCity)} — бесплатно, по ПМР — ${rub(G.deliveryOther)}`)}
@@ -971,7 +971,7 @@ function aOrders(){
   <div id="olist">${list.length?list.map(orderLi).join(''):empty('box','Заказов нет','В этой вкладке пусто')}</div>`;
 }
 function aOrderPage({id}){
-  const o = DB.orders.find(x=>x.id===id); if (!o) return head('Заказ');
+  const o = DB.orders.find(x=>x.id===id); if (!o) return pageHead('Заказ');
   const r = role(), c = DB.clients[o.client] || {}, cs = staffBy(o.courier), mine = o.courier===S.as;
   const couriers = DB.staff.filter(s=>s.role==='courier');
   let actions = '';
@@ -988,7 +988,7 @@ function aOrderPage({id}){
       <button class="btn glass wide danger" onclick="A.st(${o.id},-1)">Отменить заказ</button>`;
   }
   const addr = o.city+', '+o.address;
-  return head(`Заказ №${o.id}`, fmt(o.ts), `<button class="ibtn glass" onclick="A.achat('${o.id}')">${ic('chat')}</button>`) +
+  return pageHead(`Заказ №${o.id}`, fmt(o.ts), `<button class="ibtn glass" onclick="A.achat('${o.id}')">${ic('chat')}</button>`) +
   `${r==='courier'?`<div class="box glass" style="margin-bottom:12px;border-color:rgba(255,176,32,.5)"><p class="desc" style="color:var(--warn);font-weight:700">18+ · проверьте документ покупателя при передаче</p></div>`:''}
   ${actions}
   <div class="sect">Клиент</div>
@@ -1050,7 +1050,7 @@ function newVariant(){ return {id:'v'+Date.now().toString(36)+Math.random().toSt
 function aEdit(){
   const p = ED, own = isOwner(), cats = DB.cats;
   const vf = (i, k, lab, type='text', cls='') => `<label class="${cls}">${lab}<input class="inp sm" type="${type}" ${type==='number'?'inputmode="decimal"':''} value="${p.variants[i][k]??''}" oninput="ED.variants[${i}].${k}=${type==='number'?'num(this.value)':'this.value'}"></label>`;
-  return head(p.id ? 'Редактирование' : 'Новый товар', p.id ? 'ID '+p.id : '') +
+  return pageHead(p.id ? 'Редактирование' : 'Новый товар', p.id ? 'ID '+p.id : '') +
   `<div class="sect">Фото</div>
   <div class="box glass"><div class="photos">${p.photos.map((s,i)=>`<div class="photo"><img src="${s}" alt=""><button onclick="A.delPhoto(${i})">${ic('x')}</button></div>`).join('')}
     <label class="ph-add">${ic('image')}<input type="file" accept="image/*" multiple hidden onchange="A.addPhotos(this.files)"></label></div>
@@ -1092,7 +1092,7 @@ function sheetCats(){
 }
 function aLow(){
   const l = lowList();
-  return head('Заканчиваются', `порог: ${G.lowStock} шт. и меньше`) + (l.length ? l.sort((a,b)=>a.v.stock-b.v.stock).map(({p,v})=>`<button class="li glass" onclick="A.edit(${p.id})"><div class="th sm">${art(p)}</div><div class="m"><b>${esc(p.name)}</b><span>${esc(vLabel(v)||'—')}</span></div><div class="r ${v.stock?'':'neg'}" style="${v.stock?'color:var(--warn)':''}">${v.stock} шт.</div></button>`).join('') : empty('check','Всё в наличии',''));
+  return pageHead('Заканчиваются', `порог: ${G.lowStock} шт. и меньше`) + (l.length ? l.sort((a,b)=>a.v.stock-b.v.stock).map(({p,v})=>`<button class="li glass" onclick="A.edit(${p.id})"><div class="th sm">${art(p)}</div><div class="m"><b>${esc(p.name)}</b><span>${esc(vLabel(v)||'—')}</span></div><div class="r ${v.stock?'':'neg'}" style="${v.stock?'color:var(--warn)':''}">${v.stock} шт.</div></button>`).join('') : empty('check','Всё в наличии',''));
 }
 
 /* ---------- клиенты ---------- */
@@ -1105,9 +1105,9 @@ function aClients(){
   <div id="clist">${list.map(({c,s})=>`<button class="li glass" onclick="A.aClient('${c.id}')"><div class="ava sm">${esc((c.name||'?')[0])}</div><div class="m"><b>${esc(c.name||'Без имени')}${c.blocked?' 🚫':''}</b><span>${esc(c.phone||'нет телефона')} · заказов: ${s.n} · баллы: ${c.bonus}</span></div><div class="r">${rub(s.spent)}</div></button>`).join('')}</div>`;
 }
 function aClientPage({id}){
-  const c = DB.clients[id]; if (!c) return head('Клиент');
+  const c = DB.clients[id]; if (!c) return pageHead('Клиент');
   const s = clientStats(id), os = DB.orders.filter(o=>o.client===id).sort((a,b)=>b.ts-a.ts), inv = invitedBy(id), ref = DB.clients[c.refBy];
-  return head(esc(c.name||'Клиент'), 'с '+fmtDay(c.joined)) +
+  return pageHead(esc(c.name||'Клиент'), 'с '+fmtDay(c.joined)) +
   `<div class="tiles"><div class="tile glass"><div class="k">Потратил</div><div class="v">${rub(s.spent)}</div></div><div class="tile glass"><div class="k">Заказов</div><div class="v">${s.n}</div></div>
    <div class="tile glass"><div class="k">Баллы</div><div class="v">${c.bonus}</div></div><div class="tile glass"><div class="k">Пригласил</div><div class="v">${inv.length}</div></div></div>
   <div class="box glass" style="margin-top:12px">
@@ -1149,15 +1149,15 @@ function aMore(){
 }
 function aChats(){
   const l = Object.entries(DB.chats).filter(([k,c])=>c.msgs.length).sort((a,b)=>(b[1].msgs.at(-1).ts)-(a[1].msgs.at(-1).ts));
-  return head('Чаты', 'Отвечает владелец') + (l.length ? l.map(([k,c])=>{ const cl = DB.clients[c.client]||{}, m = c.msgs.at(-1);
+  return pageHead('Чаты', 'Отвечает владелец') + (l.length ? l.map(([k,c])=>{ const cl = DB.clients[c.client]||{}, m = c.msgs.at(-1);
     return `<button class="li glass" onclick="A.achat('${k}')"><div class="ava sm">${esc((cl.name||'?')[0])}</div><div class="m"><b>${esc(cl.name||'Клиент')} · ${c.order?'заказ №'+c.order:'поддержка'}</b><span>${esc(m.t)}</span></div><div class="r"><small>${hhmm(m.ts)}</small>${c.unread?`<i class="nb">${c.unread}</i>`:''}</div></button>`; }).join('') : empty('chat','Сообщений нет',''));
 }
 function aChatPage({key}){
   const c = DB.chats[key] || {}, cl = DB.clients[c.client]||{};
-  return head(esc(cl.name||'Клиент'), c.order?`Заказ №${c.order}`:'Поддержка', c.order?`<button class="ibtn glass" onclick="A.aOrder(${c.order})">${ic('box')}</button>`:'<div class="ph"></div>') + chatHtml(key, true);
+  return pageHead(esc(cl.name||'Клиент'), c.order?`Заказ №${c.order}`:'Поддержка', c.order?`<button class="ibtn glass" onclick="A.aOrder(${c.order})">${ic('box')}</button>`:'<div class="ph"></div>') + chatHtml(key, true);
 }
 function aPromos(){
-  return head('Промокоды', '', `<button class="ibtn primary" onclick="A.promoEdit()">${ic('plus')}</button>`) +
+  return pageHead('Промокоды', '', `<button class="ibtn primary" onclick="A.promoEdit()">${ic('plus')}</button>`) +
   (DB.promos.length ? DB.promos.map((p,i)=>`<div class="li glass"><div class="m"><b>${esc(p.code)} · ${p.t==='pct'?'−'+p.v+'%':'−'+p.v+' руб.'}</b><span>${p.min?'от '+p.min+' руб. · ':''}использовано ${p.used}${p.limit?' из '+p.limit:''}</span></div>${sw(p.active,`A.promoTog(${i})`)}<button class="ibtn sm" onclick="A.promoDel(${i})">${ic('trash')}</button></div>`).join('') : empty('tag','Промокодов нет',''));
 }
 function sheetPromo(){
@@ -1174,7 +1174,7 @@ function sheetPromo(){
 const AUD = [['all','Все клиенты',()=>true],['buyers','Покупали',c=>clientStats(c.id).n>0],['new','Ни разу не покупали',c=>clientStats(c.id).n===0],['sleep','Не покупали 30 дней',c=>{ const s = clientStats(c.id); return s.n>0 && s.last < Date.now()-30*DAY; }]];
 function aBcast(){
   const a = AUD.find(x=>x[0]===BC.aud), n = Object.values(DB.clients).filter(c=>!c.blocked).filter(a[2]).length;
-  return head('Рассылка', 'через бота') + `<div class="form glass">
+  return pageHead('Рассылка', 'через бота') + `<div class="form glass">
     <div class="fl">Кому</div><div class="opts">${AUD.map(([k,l])=>`<button class="opt ${BC.aud===k?'on':''}" onclick="BC.aud='${k}';A.r()">${l}</button>`).join('')}</div>
     <div class="fl">Текст сообщения</div><textarea class="inp" style="height:130px" placeholder="Новинки уже в каталоге! Скидка 10% по промокоду…" oninput="BC.t=this.value">${esc(BC.t)}</textarea>
     <div class="hint">Получателей: ${n}. Под сообщением бот добавит кнопку «Открыть магазин».</div>
@@ -1184,7 +1184,7 @@ function aBcast(){
 }
 function aStaff(){
   const own = S.as;
-  return head('Сотрудники', 'роли и доступы') +
+  return pageHead('Сотрудники', 'роли и доступы') +
   `<div class="box glass"><p class="desc"><b style="color:var(--text)">Владелец</b> — всё. <b style="color:var(--text)">Продавец</b> — заказы, товары и остатки (без закупочных цен и удаления), клиенты. <b style="color:var(--text)">Курьер</b> — только свои доставки: адрес, телефон, карта, касса.</p></div>
   <div class="sect">Команда</div>
   ${DB.staff.map((s,i)=>{ const cash = s.role==='courier' ? sum(courierCash(s.id),o=>o.total) : 0;
@@ -1199,7 +1199,7 @@ function aStaff(){
 }
 function fIn(label, key, type='text', hint=''){ return `<div class="fl">${label}</div><input class="inp" type="${type}" ${type==='number'?'inputmode="decimal"':''} value="${esc(SE[key])}" oninput="SE.${key}=${type==='number'?'num(this.value)':'this.value'}">${hint?`<div class="hint">${hint}</div>`:''}`; }
 function aSettings(){
-  return head('Настройки магазина') + `<div class="sect">Магазин</div><div class="form glass">
+  return pageHead('Настройки магазина') + `<div class="sect">Магазин</div><div class="form glass">
     ${fIn('Название','name')}${fIn('Часы работы','hours')}${fIn('Телефон магазина','phone','tel')}
     <div class="sw"><div><b>Самовывоз</b><span>Если выключен — только доставка</span></div>${sw(SE.pickupOn,'SE.pickupOn=!SE.pickupOn;A.r()')}</div>
     ${SE.pickupOn?fIn('Адрес самовывоза','pickup'):''}
@@ -1218,7 +1218,7 @@ function aSettings(){
 }
 function aLoyal(){
   const ex = 1000, cb = Math.floor(ex*(SE.cashback||0)/100), mb = Math.floor(ex*(SE.maxBonus||0)/100);
-  return head('Кэшбэк и баллы') + `<div class="form glass">
+  return pageHead('Кэшбэк и баллы') + `<div class="form glass">
     ${fIn('Кэшбэк, % от суммы заказа','cashback','number','Начисляется после статуса «Выполнен» с суммы, оплаченной деньгами')}
     ${fIn('Баллами можно оплатить до, %','maxBonus','number')}
     ${fIn('Приветственные баллы новому клиенту','welcome','number')}
@@ -1233,7 +1233,7 @@ function aRefSet(){
   const paid = sum(cl.flatMap(c=>c.ledger.filter(l=>/^Друг |^Бонус за приглашение/.test(l.r))), l=>l.n);
   const tops = cl.map(c=>({c, n:invitedBy(c.id).length, k:invitedBy(c.id).filter(x=>x.refRewarded).length})).filter(x=>x.n).sort((a,b)=>b.k-a.k||b.n-a.n).slice(0,10);
   const refRev = sum(DB.orders.filter(o=>o.status===4 && DB.clients[o.client] && DB.clients[o.client].refBy), o=>o.total);
-  return head('Реферальная система') + `<div class="form glass"><div class="sw"><div><b>Программа включена</b><span>Ссылка «Приведи друга» в профиле клиентов</span></div>${sw(SE.refOn,'SE.refOn=!SE.refOn;A.r()')}</div></div>
+  return pageHead('Реферальная система') + `<div class="form glass"><div class="sw"><div><b>Программа включена</b><span>Ссылка «Приведи друга» в профиле клиентов</span></div>${sw(SE.refOn,'SE.refOn=!SE.refOn;A.r()')}</div></div>
   <div class="form glass" style="margin-top:10px">
     ${fIn('Друг получает баллов (сразу, на первый заказ)','refFriend','number')}
     ${fIn('Пригласивший получает баллов','refInviter','number','Начисляется, когда друг получит первый заказ')}
@@ -1246,7 +1246,7 @@ function aRefSet(){
   ${tops.length?tops.map(t=>`<button class="li glass" onclick="A.aClient('${t.c.id}')"><div class="ava sm">${esc(t.c.name[0])}</div><div class="m"><b>${esc(t.c.name)}</b><span>пригласил ${t.n} · купили ${t.k}</span></div><div class="r">+${t.k*G.refInviter}</div></button>`).join(''):'<div class="box glass"><p class="desc">Пока никого</p></div>'}
   <div class="bbar glass"><button class="btn primary" onclick="A.saveSet('Реферальная система')">Сохранить</button></div>`;
 }
-function aLog(){ return head('Журнал действий') + `<div class="box glass">${DB.log.slice(0,200).map(l=>`<div class="logrow">${esc(l.text)}<small>${fmt(l.ts)} · ${esc(l.who)}</small></div>`).join('')||'<p class="desc">Пусто</p>'}</div>`; }
+function aLog(){ return pageHead('Журнал действий') + `<div class="box glass">${DB.log.slice(0,200).map(l=>`<div class="logrow">${esc(l.text)}<small>${fmt(l.ts)} · ${esc(l.who)}</small></div>`).join('')||'<p class="desc">Пусто</p>'}</div>`; }
 
 /* ---------- Excel ---------- */
 function exportSheets(){
@@ -1304,7 +1304,7 @@ const PAGES = {product:pProduct, checkout:pCheckout, success:pSuccess, orders:pO
   aorder:aOrderPage, edit:aEdit, low:aLow, aclient:aClientPage, achats:aChats, achat:aChatPage, promos:aPromos, bcast:aBcast, staff:aStaff, settings:aSettings, loyal:aLoyal, refset:aRefSet, log:aLog};
 function safeView(fn, arg, isPage){
   try{ if (!fn) throw new Error('Экран не найден'); return fn(arg); }
-  catch(e){ showErr(e); return (isPage ? head('Ошибка') : '') + `<div class="box glass" style="margin-top:20px"><p class="desc">Не удалось открыть экран. Сделайте скриншот красного сообщения сверху и пришлите его разработчику.</p></div>`; }
+  catch(e){ showErr(e); return (isPage ? pageHead('Ошибка') : '') + `<div class="box glass" style="margin-top:20px"><p class="desc">Не удалось открыть экран. Сделайте скриншот красного сообщения сверху и пришлите его разработчику.</p></div>`; }
 }
 function render(){
   if (!DB){ $('#page').style.display='none'; $('#main').style.display='block'; $('#tabs').style.display='none'; $('#main').innerHTML = loadHtml(); return; }
