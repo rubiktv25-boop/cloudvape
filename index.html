@@ -1,0 +1,1623 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>Cloud Vape</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--text:#fff;--muted:rgba(225,236,255,.62);--glass1:rgba(255,255,255,.13);--glass2:rgba(255,255,255,.04);--border:rgba(255,255,255,.17);--hl:rgba(255,255,255,.24);--shadow:0 12px 32px rgba(0,0,0,.35);--input:rgba(255,255,255,.06);--bg:#030817;--acc:#6db3ff;--ok:#3ddc97;--bad:#ff6b8f;--warn:#ffb020}
+body.light{--text:#0b1736;--muted:rgba(11,23,54,.56);--glass1:rgba(255,255,255,.78);--glass2:rgba(255,255,255,.48);--border:rgba(255,255,255,.95);--hl:#fff;--shadow:0 10px 28px rgba(30,70,150,.14);--input:rgba(255,255,255,.65);--bg:#eef4ff;--acc:#1d5fd6;--ok:#14a86a;--bad:#d6335b;--warn:#c27a00}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{font-family:Manrope,system-ui,-apple-system,sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+a{color:var(--acc);text-decoration:none}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(95% 60% at -15% 35%,#3b93ff 0%,#1554d6 24%,rgba(8,24,90,.9) 50%,transparent 76%),radial-gradient(70% 45% at 115% 105%,rgba(40,60,210,.5),transparent 70%),#030817}
+body.light .bg{background:radial-gradient(95% 60% at -15% 35%,#8cbfff 0%,#c8ddfc 42%,transparent 76%),radial-gradient(70% 45% at 115% 105%,#d4dbff,transparent 70%),#eef4ff}
+body.admin .bg{background:radial-gradient(95% 60% at 115% 20%,#3b6bff 0%,#1a3fc0 22%,rgba(10,20,80,.9) 48%,transparent 76%),radial-gradient(70% 45% at -15% 105%,rgba(40,60,210,.5),transparent 70%),#030817}
+body.admin.light .bg{background:radial-gradient(95% 60% at 115% 20%,#a9c6ff 0%,#d6e3ff 42%,transparent 76%),#eef4ff}
+#app{max-width:560px;margin:0 auto;padding:14px 16px calc(112px + env(safe-area-inset-bottom))}
+.glass{background:linear-gradient(140deg,var(--glass1),var(--glass2));backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);border:1px solid var(--border);box-shadow:inset 0 1px 0 var(--hl),inset 0 -1px 0 rgba(255,255,255,.04),var(--shadow)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;margin:6px 0 16px;gap:10px}
+h1{font-size:32px;font-weight:800;margin:0;letter-spacing:-.02em}
+h2{font-size:24px;margin:0 0 4px;font-weight:800;letter-spacing:-.01em}
+h3{margin:0}
+.sub{color:var(--muted);font-size:14px;margin-bottom:2px}
+.brandline{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;margin-bottom:4px}
+.logo{width:30px;height:30px;border-radius:10px;display:grid;place-items:center}
+.logo svg{width:18px;height:18px}
+.ibtn{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ibtn.sm{width:36px;height:36px}.ibtn.sm svg{width:18px;height:18px}
+.ibtn.primary,.add,.btn.primary,.chip.on,.opt.on,.msg.me,.age-badge,.ava,.promo .pi,.logo{background:linear-gradient(180deg,#5aa8ff,#2672ea);color:#fff;border:1px solid rgba(170,215,255,.6)}
+.promo{display:flex;gap:12px;align-items:center;border-radius:24px;padding:14px 16px;margin-bottom:12px}
+.promo .pi{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none}
+.promo b{display:block;font-size:15px}.promo span{font-size:13px;color:var(--muted)}
+.srow{display:flex;gap:10px;margin-bottom:12px}
+.search{flex:1;display:flex;align-items:center;gap:10px;padding:0 16px;height:52px;border-radius:26px;color:var(--muted);min-width:0}
+.search input{flex:1;background:none;border:0;outline:0;color:var(--text);font-size:15px;min-width:0}
+.search input::placeholder{color:var(--muted)}
+.fbtn{display:flex;align-items:center;gap:8px;padding:0 18px;height:52px;border-radius:26px;font-weight:700;flex:none}
+.cnt{font-style:normal;background:#2f86f5;color:#fff;border-radius:10px;font-size:11px;padding:2px 7px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 14px;padding:2px 16px 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip,.opt{white-space:nowrap;padding:10px 16px;border-radius:20px;border:1px solid var(--border);background:var(--input);font-weight:600;font-size:14px}
+.chip.on,.opt.on{box-shadow:0 6px 18px rgba(38,114,234,.38)}
+.chip.sm{padding:7px 12px;font-size:13px}
+.opt.na{opacity:.4;text-decoration:line-through}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt-title{font-weight:700;margin:16px 0 8px;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{border-radius:26px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer}
+.pic{position:relative;aspect-ratio:1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.16),transparent 64%);overflow:hidden}
+.pic svg.art{width:76%;height:76%}
+.pic img,.hero img{width:100%;height:100%;object-fit:cover}
+.gal{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;width:100%;height:100%;scrollbar-width:none}
+.gal img{flex:none;width:100%;height:100%;object-fit:cover;scroll-snap-align:start}
+.tags{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.tag{font-size:11px;font-weight:700;padding:4px 8px;border-radius:10px;color:#fff}
+.tag.hit{background:rgba(255,140,40,.88)}.tag.new{background:rgba(30,185,115,.88)}.tag.sale{background:rgba(240,60,100,.88)}.tag.out{background:rgba(110,120,140,.9)}
+.fav{position:absolute;right:8px;top:8px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);border:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.fav svg{width:18px;height:18px}
+.fav.on,.ibtn.on{color:#ff5a8a}.fav.on svg,.ibtn.on svg{fill:#ff5a8a}
+.cbody{padding:10px 12px 12px;display:flex;flex-direction:column;gap:3px;flex:1}
+.brand{font-size:12px;color:var(--muted);font-weight:600}
+.pname{font-weight:700;font-size:15px;line-height:1.25}
+.rate{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.rate svg{width:14px;height:14px;fill:#ffc53d;stroke:#ffc53d}
+.prow{display:flex;justify-content:space-between;align-items:flex-end;margin-top:auto;padding-top:6px}
+.price{font-weight:800;font-size:16px}.price small{font-size:12px;font-weight:600}
+.price s{display:block;font-size:12px;color:var(--muted);font-weight:500}
+.add{width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
+.add:disabled{opacity:.35}
+.btn{height:54px;border-radius:27px;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 20px}
+.btn.sm{height:44px;font-size:14px;border-radius:22px;padding:0 16px}
+.btn.primary{box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 24px rgba(38,114,234,.38)}
+.btn.green{background:linear-gradient(180deg,#43d39a,#1aa56b);color:#fff;border:1px solid rgba(180,255,220,.6)}
+.btn.danger{color:var(--bad)}
+.btn:disabled{opacity:.45}
+.btn.wide{width:100%}
+.btn+.btn{margin-top:10px}
+.brow{display:flex;gap:10px;margin-top:10px}.brow .btn{flex:1;margin:0}
+#tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:calc(100% - 32px);max-width:528px;display:flex;padding:6px;border-radius:32px;z-index:20}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:26px;font-size:11px;font-weight:600;color:var(--muted);position:relative}
+.tab.on{color:var(--text);background:rgba(255,255,255,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+body.light .tab.on{background:rgba(38,114,234,.12);color:#1d5fd6}
+.badge{position:absolute;top:2px;right:calc(50% - 24px);font-style:normal;background:#ff4d7d;color:#fff;font-size:10px;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 4px}
+.nb{font-style:normal;background:#ff4d7d;color:#fff;font-size:11px;min-width:20px;height:20px;border-radius:10px;display:inline-grid;place-items:center;padding:0 6px;font-weight:700}
+.bbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:calc(100% - 32px);max-width:528px;display:flex;gap:10px;align-items:center;padding:8px;border-radius:34px;z-index:20}
+.bbar .btn{flex:1;margin:0}
+.stepper{display:flex;align-items:center;gap:4px}
+.stepper button{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--input);border:1px solid var(--border)}
+.stepper.sm button{width:34px;height:34px}.stepper.sm svg{width:16px;height:16px}
+.stepper b{min-width:24px;text-align:center}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 14px}
+.phead .t{flex:1;text-align:center;font-weight:700;min-width:0}
+.phead .t small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+.phead .ph{width:48px}
+.hero{position:relative;border-radius:32px;aspect-ratio:1.15;display:grid;place-items:center;margin-bottom:16px;overflow:hidden}
+.hero svg.art{width:62%;height:62%}
+.box{border-radius:24px;padding:16px}
+.desc{color:var(--muted);line-height:1.5;font-size:15px;margin:0}
+.sect{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:20px 6px 8px;display:flex;justify-content:space-between;align-items:center}
+.sect .link{text-transform:none;letter-spacing:0;font-size:13px}
+.cdot{display:flex;align-items:center;gap:8px;padding:7px 14px 7px 7px;border-radius:20px;border:1px solid var(--border);background:var(--input);font-weight:600;font-size:14px}
+.cdot i{width:26px;height:26px;border-radius:50%;background:var(--c);border:2px solid rgba(255,255,255,.55)}
+.cdot.on{border-color:#5aa8ff;box-shadow:0 0 0 2px rgba(90,168,255,.5)}
+.cdot.na{opacity:.4}
+.stock{font-size:13px;color:var(--ok);font-weight:700;margin-top:14px}.stock.out{color:var(--bad)}
+.inp{width:100%;height:50px;border-radius:18px;border:1px solid var(--border);background:var(--input);padding:0 16px;outline:0;font-size:15px;-webkit-appearance:none;appearance:none;min-width:0}
+.inp.sm{height:42px;border-radius:14px;padding:0 12px;font-size:14px}
+textarea.inp{height:90px;padding:14px 16px;resize:none}
+.inp:focus{border-color:#5aa8ff}
+.inp::placeholder{color:var(--muted)}
+select.inp option{color:#0b1736}
+.form{border-radius:26px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.fl{font-size:12px;color:var(--muted);font-weight:700;margin:2px 6px -4px}
+.hint{font-size:12px;color:var(--muted);padding:0 6px;line-height:1.4}
+.irow{display:flex;gap:10px;align-items:center}
+.irow>*{flex:1}
+.irow>.ibtn,.irow>.btn,.irow>.toggle{flex:none}
+.seg{display:flex;padding:5px;border-radius:28px;gap:4px}
+.seg button{flex:1;height:46px;border-radius:23px;font-weight:700;color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;gap:6px}
+.seg button.on{background:rgba(255,255,255,.17);color:var(--text);box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+body.light .seg button.on{background:#fff;box-shadow:0 2px 8px rgba(30,70,150,.12)}
+.rows{border-radius:24px;padding:12px 16px}
+.row{display:flex;justify-content:space-between;padding:6px 0;font-size:15px;gap:10px}
+.row span{color:var(--muted)}
+.row b{text-align:right}
+.row.total{font-weight:800;font-size:18px;border-top:1px solid var(--border);margin-top:6px;padding-top:12px}
+.row.total span{color:var(--text)}
+.green b,.pos{color:var(--ok)}.neg{color:var(--bad)}
+.ci{display:flex;gap:12px;border-radius:24px;padding:10px;margin-bottom:10px;align-items:center}
+.th{width:72px;height:72px;border-radius:18px;display:grid;place-items:center;background:rgba(255,255,255,.07);flex:none;overflow:hidden}
+.th.sm{width:52px;height:52px;border-radius:14px}
+.th svg{width:80%;height:80%}.th img{width:100%;height:100%;object-fit:cover}
+.ci .info{flex:1;min-width:0}
+.ci .vl{font-size:12px;color:var(--muted);margin:2px 0 8px}
+.ci .bot{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.menu{border-radius:24px;overflow:hidden;margin-top:12px}
+.mi{display:flex;align-items:center;gap:12px;padding:14px 16px;width:100%;text-align:left;font-weight:600}
+.mi+.mi{border-top:1px solid var(--border)}
+.mic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:rgba(90,168,255,.18);color:var(--acc);flex:none}
+.mic svg{width:19px;height:19px}
+.mi-r{margin-left:auto;color:var(--muted);display:flex;align-items:center;gap:6px;font-weight:500}
+.mi-r svg{width:18px;height:18px}
+#sheet-wrap{position:fixed;inset:0;z-index:50;pointer-events:none}
+#sheet-wrap .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;transition:.25s}
+#sheet{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;border-radius:32px 32px 0 0;padding:10px 18px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;transform:translateY(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);background:linear-gradient(140deg,rgba(32,48,98,.94),rgba(8,14,38,.97));border-top:1px solid var(--border)}
+body.light #sheet{background:linear-gradient(140deg,rgba(255,255,255,.97),rgba(234,242,255,.97))}
+#sheet-wrap.open{pointer-events:auto}#sheet-wrap.open .backdrop{opacity:1}#sheet-wrap.open #sheet{transform:none}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--border);margin:0 auto 14px}
+.sh-head{display:flex;justify-content:space-between;align-items:center}
+.sh-head h3{font-size:20px}
+.link{color:var(--acc);font-weight:700}
+.two{display:flex;gap:10px}.two>*{flex:1;min-width:0}
+#sheet .btn.primary{margin-top:20px}
+#age{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:24px;background:rgba(2,6,20,.55);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+#age.show{display:grid}
+.age-in{max-width:380px;width:100%;border-radius:32px;padding:28px 22px;text-align:center}
+.age-in p{color:var(--muted);line-height:1.5;font-size:14px;margin:8px 0 20px}
+.age-badge{width:88px;height:88px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;font-size:28px;font-weight:800;box-shadow:0 12px 30px rgba(38,114,234,.5)}
+#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-180%);z-index:120;width:max-content;max-width:calc(100% - 32px);padding:12px 18px;border-radius:22px;font-weight:600;font-size:14px;transition:transform .3s;background:rgba(18,30,68,.9);color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#toast.show{transform:translate(-50%,0)}
+#busy{position:fixed;top:0;left:0;right:0;height:3px;z-index:130;display:none;background:linear-gradient(90deg,transparent,#5aa8ff,transparent);background-size:50% 100%;background-repeat:no-repeat;animation:busy 1s linear infinite}
+@keyframes busy{from{background-position:-50% 0}to{background-position:150% 0}}
+.tl{border-radius:24px;padding:16px}
+.st{display:flex;gap:12px;align-items:flex-start;position:relative;padding-bottom:16px}
+.st:last-child{padding-bottom:0}
+.st .d{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex:none;display:grid;place-items:center;background:var(--input);z-index:1}
+.st.done .d{background:#2f86f5;border-color:#7cbcff;color:#fff}
+.st .d svg{width:13px;height:13px;stroke-width:3}
+.st:not(:last-child)::after{content:'';position:absolute;left:10px;top:22px;bottom:0;width:2px;background:var(--border)}
+.st.done:not(:last-child)::after{background:#2f86f5}
+.st .l{font-weight:600;font-size:15px}.st .l small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+.st.cur .l{color:var(--acc)}
+.pill{font-size:12px;font-weight:700;padding:5px 10px;border-radius:12px;background:rgba(90,168,255,.2);color:var(--acc);white-space:nowrap}
+.pill.s0{background:rgba(255,176,32,.2);color:var(--warn)}
+.pill.s4,.pill.ok{background:rgba(40,190,120,.2);color:var(--ok)}.pill.sx,.pill.bad{background:rgba(240,60,100,.2);color:var(--bad)}
+.pill.mute{background:var(--input);color:var(--muted)}
+.oc{border-radius:24px;padding:14px 16px;margin-bottom:10px;display:block;width:100%;text-align:left}
+.oc-h{display:flex;justify-content:space-between;align-items:center;font-weight:800;gap:8px}
+.oc-m{color:var(--muted);font-size:13px;margin-top:6px;display:flex;justify-content:space-between;gap:8px}
+.oc-r{margin-top:8px;font-size:13px;color:var(--warn);font-weight:700}
+.msgs{display:flex;flex-direction:column;gap:8px}
+.msg{max-width:80%;padding:10px 14px;border-radius:20px;font-size:15px;line-height:1.35;word-wrap:break-word}
+.msg small{display:block;font-size:11px;opacity:.6;margin-top:3px;text-align:right}
+.msg .who{display:block;font-size:11px;font-weight:700;opacity:.7;margin-bottom:2px}
+.msg.op{align-self:flex-start;border-bottom-left-radius:6px}
+.msg.me{align-self:flex-end;border-bottom-right-radius:6px}
+.msg.sys{align-self:center;font-size:12px;color:var(--muted);text-align:center}
+.cin{flex:1;background:none;border:0;outline:0;padding:0 12px;font-size:15px;min-width:0}
+.cin::placeholder{color:var(--muted)}
+.stars{display:flex;gap:6px;justify-content:center;margin:12px 0 14px}
+.stars svg{width:38px;height:38px;stroke:#ffc53d}
+.stars .on svg{fill:#ffc53d}
+.rv{padding:12px 0;border-top:1px solid var(--border)}.rv:first-of-type{border-top:0}
+.rv-h{display:flex;justify-content:space-between;font-weight:700;font-size:14px}
+.rv-s{color:#ffc53d;font-size:13px;letter-spacing:1px}
+.rv p{margin:4px 0 0;font-size:14px;color:var(--muted)}
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty .ei{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;color:var(--acc)}
+.empty h3{color:var(--text);margin:0 0 6px}
+.pcard{display:flex;align-items:center;gap:14px;border-radius:26px;padding:14px}
+.ava{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:800;overflow:hidden;flex:none}
+.ava.sm{width:40px;height:40px;font-size:15px}
+.ava img{width:100%;height:100%;object-fit:cover}
+.bcard{border-radius:26px;padding:18px;margin-top:12px;background:linear-gradient(140deg,rgba(90,168,255,.5),rgba(38,114,234,.22))!important;color:#fff;display:block;width:100%;text-align:left}
+body.light .bcard{background:linear-gradient(140deg,#5aa8ff,#2672ea)!important}
+.bcard .big{font-size:38px;font-weight:800;line-height:1.1}
+.bcard p{margin:6px 0 0;font-size:13px;opacity:.85;line-height:1.45}
+.ref{border-radius:26px;padding:16px;margin-top:12px}
+.ref span.d{display:block;color:var(--muted);font-size:13px;margin-top:4px;line-height:1.4}
+.reflink{display:flex;gap:8px;align-items:center;margin-top:12px}
+.reflink code{flex:1;font-size:12px;padding:10px 12px;border-radius:14px;background:var(--input);border:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.agree{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);margin:16px 6px;line-height:1.4}
+.agree input{width:20px;height:20px;accent-color:#2f86f5;flex:none;margin:0}
+.demo{border:1px dashed var(--border);border-radius:20px;min-height:44px;width:100%;color:var(--muted);font-weight:600;font-size:13px;margin-top:12px;padding:8px 12px}
+.done-ic{width:110px;height:110px;margin:40px auto 18px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(180deg,#43d39a,#1aa56b);border:1px solid rgba(180,255,220,.6);box-shadow:0 14px 34px rgba(30,180,110,.45)}
+.done-ic svg{width:52px;height:52px;stroke-width:2.6}
+.center{text-align:center}
+.applied{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 0;font-size:14px;font-weight:700;color:var(--ok)}
+.toggle{width:52px;height:32px;border-radius:16px;background:var(--input);border:1px solid var(--border);position:relative;flex:none;transition:.2s}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.toggle.on{background:#2f86f5;border-color:#7cbcff}.toggle.on::after{left:23px}
+.info-row{display:flex;gap:12px;align-items:flex-start;padding:8px 0;font-size:15px}
+.info-row svg{color:var(--acc);margin-top:1px}
+.info-row .x{flex:1;min-width:0}
+/* admin */
+.demo-bar{display:flex;align-items:center;gap:6px;border-radius:20px;padding:6px 6px 6px 12px;margin-bottom:12px;font-size:12px;color:var(--muted);font-weight:700;overflow-x:auto}
+.demo-bar button{padding:6px 10px;border-radius:14px;font-weight:700;font-size:12px;color:var(--muted);white-space:nowrap}
+.demo-bar button.on{background:#2f86f5;color:#fff}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{border-radius:22px;padding:14px}
+.tile .k{font-size:12px;color:var(--muted);font-weight:700}
+.tile .v{font-size:22px;font-weight:800;margin-top:4px;letter-spacing:-.01em}
+.tile .s{font-size:12px;color:var(--muted);margin-top:2px}
+.tile.wide{grid-column:span 2}
+.chart{border-radius:24px;padding:14px 12px 8px}
+.chart svg{width:100%;height:140px;display:block}
+.li{display:flex;align-items:center;gap:12px;border-radius:22px;padding:12px 14px;margin-bottom:8px;width:100%;text-align:left}
+.li .m{flex:1;min-width:0}
+.li .m b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li .m span{display:block;font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li .r{text-align:right;font-weight:800;font-size:14px;flex:none}
+.li .r small{display:block;font-weight:600;color:var(--muted);font-size:12px}
+.bar-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px}
+.bar-row .n{width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-row .b{flex:1;height:10px;border-radius:5px;background:var(--input);overflow:hidden}
+.bar-row .b i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#2672ea,#5aa8ff)}
+.bar-row .v{width:84px;text-align:right;font-weight:700;font-size:13px}
+.var-card{border-radius:20px;padding:12px;margin-bottom:10px}
+.vgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.vgrid .w2{grid-column:span 2}.vgrid .w3{grid-column:span 3}
+.vgrid label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);font-weight:700}
+.photos{display:flex;gap:10px;flex-wrap:wrap}
+.photo{width:84px;height:84px;border-radius:18px;overflow:hidden;position:relative;border:1px solid var(--border)}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo button{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;display:grid;place-items:center}
+.photo button svg{width:14px;height:14px}
+.ph-add{width:84px;height:84px;border-radius:18px;border:1px dashed var(--border);display:grid;place-items:center;color:var(--acc);cursor:pointer}
+.sw{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:4px 6px}
+.sw div b{display:block;font-size:15px}
+.sw div span{font-size:12px;color:var(--muted)}
+.logrow{padding:10px 0;border-top:1px solid var(--border);font-size:14px}
+.logrow:first-child{border-top:0}
+.logrow small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.cnum{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div id="app"><main id="main"></main><section id="page"></section></div>
+<nav id="tabs" class="glass"></nav>
+<div id="sheet-wrap"><div class="backdrop" onclick="A.closeSheet()"></div><div id="sheet"></div></div>
+<div id="age"></div>
+<div id="toast"></div>
+<div id="busy"></div>
+<script>
+/* =====================================================================
+   CLOUD VAPE — Telegram Mini App (прототип: данные хранятся в браузере;
+   на этапе 3 этот же DB-объект переедет в Supabase)
+   ===================================================================== */
+const tg = window.Telegram && window.Telegram.WebApp;
+try{ tg && tg.ready(); tg && tg.expand(); }catch(e){}
+const U = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || null;
+const OWNER_ID = '8130641349';           // Telegram ID владельца
+const ME = String(U ? U.id : OWNER_ID);  // вне Telegram (превью) — открываемся как владелец
+/* сервер Supabase (публичные значения, их можно хранить в коде) */
+const SUPA_URL = 'https://ibpkcjxuqyopczwzcfkz.supabase.co';
+const SUPA_KEY = 'sb_publishable_hTkmyPsjqtn6UbBtImznsQ_ezqcytZS';
+const API = SUPA_URL + '/functions/v1/api';
+const LIVE = !!(tg && tg.initData);      // открыто в Telegram → работаем с сервером, иначе — демо
+const DB_KEY = 'cloudvape_db_v3', UI_KEY = 'cloudvape_ui_v3';
+const DAY = 864e5;
+const FG = ['Фрукты','Ягоды','Холодок','Табак','Десерт'];
+const ATTRS = [['flavor','Вкус'],['mg','Крепость'],['ml','Объём'],['color','Цвет']];
+const ST = ['Новый','Подтверждён','Собирается','В доставке','Выполнен'];
+const ROLES = {owner:'Владелец', seller:'Продавец', courier:'Курьер'};
+
+/* ================= ДЕМО-БАЗА ================= */
+function rng(a){ return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function seed(){
+  const now = Date.now();
+  const settings = {name:'Cloud Vape', bot:'cloudvapepmr_bot', hours:'Ежедневно с 10:00 до 00:00', pickupOn:false, pickup:'', phone:'',
+    card:'Номер карты для перевода (укажет владелец)', freeCity:'Тирасполь', deliveryOther:50, minOrder:0,
+    cashback:2, maxBonus:30, welcome:20, reviewBonus:10, refOn:true, refFriend:15, refInviter:15, refMin:0, lowStock:3,
+    appUrl:'', cities:['Тирасполь','Бендеры','Рыбница','Дубоссары','Слободзея','Григориополь','Каменка','Днестровск','Парканы','Суклея'],
+    slots:['Как можно скорее','10:00–13:00','13:00–16:00','16:00–19:00','19:00–22:00','22:00–00:00']};
+  const cats = [{id:'disp',name:'Одноразки'},{id:'pod',name:'POD-системы'},{id:'liq',name:'Жидкости'},{id:'cart',name:'Картриджи'},{id:'acc',name:'Аксессуары'}];
+  const products = [
+   {id:1,cat:'disp',brand:'Lumo',name:'Lumo 8000',price:190,old:230,hue:200,tags:['hit'],added:3,photos:[],hidden:false,
+    desc:'Одноразка на 8000 затяжек. Сетчатый испаритель, аккумулятор 650 мАч с зарядкой Type-C, индикатор жидкости.',
+    variants:[{id:'1a',flavor:'Манго-маракуйя',fg:'Фрукты',mg:20,stock:12,cost:120},{id:'1b',flavor:'Черника-лёд',fg:'Холодок',mg:20,stock:5,cost:120},{id:'1c',flavor:'Клубника-киви',fg:'Ягоды',mg:50,stock:0,cost:120},{id:'1d',flavor:'Арбуз',fg:'Фрукты',mg:50,stock:8,cost:120}]},
+   {id:2,cat:'disp',brand:'Frost',name:'Frost Bar 5000',price:150,hue:175,tags:['new'],added:9,photos:[],hidden:false,
+    desc:'Компактная перезаряжаемая одноразка с выраженным холодком. 5000 затяжек.',
+    variants:[{id:'2a',flavor:'Мята',fg:'Холодок',mg:20,stock:10,cost:90},{id:'2b',flavor:'Малина-лёд',fg:'Ягоды',mg:50,stock:6,cost:90},{id:'2c',flavor:'Табак-ваниль',fg:'Табак',mg:50,stock:2,cost:90}]},
+   {id:3,cat:'pod',brand:'Nebula',name:'Nebula Pod X',price:420,hue:232,tags:['hit'],added:5,photos:[],hidden:false,
+    desc:'POD-система 1000 мАч, регулировка затяжки, картриджи 0.8 / 1.2 Ом в комплекте.',
+    variants:[{id:'3a',color:'Чёрный',hex:'#1b1e27',stock:4,cost:280},{id:'3b',color:'Синий',hex:'#2f7cf6',stock:2,cost:280},{id:'3c',color:'Серебро',hex:'#c9d1dc',stock:0,cost:280}]},
+   {id:4,cat:'pod',brand:'Volt',name:'Volt Mini',price:320,old:380,hue:268,tags:[],added:4,photos:[],hidden:false,
+    desc:'Лёгкая POD-система 700 мАч, автозатяжка, быстрая зарядка.',
+    variants:[{id:'4a',color:'Розовый',hex:'#f27ab0',stock:3,cost:210},{id:'4b',color:'Зелёный',hex:'#33c38a',stock:5,cost:210},{id:'4c',color:'Чёрный',hex:'#1b1e27',stock:1,cost:210}]},
+   {id:5,cat:'liq',brand:'Frost',name:'Frost Liquid Salt',price:120,hue:190,tags:['hit'],added:6,photos:[],hidden:false,
+    desc:'Солевая жидкость для POD-систем, 50/50 PG/VG.',
+    variants:[{id:'5a',flavor:'Ледяной лимон',fg:'Холодок',mg:20,ml:30,stock:15,cost:65},{id:'5b',flavor:'Ледяной лимон',fg:'Холодок',mg:50,ml:30,stock:9,cost:65},{id:'5c',flavor:'Виноград',fg:'Фрукты',mg:20,ml:30,stock:7,cost:65},{id:'5d',flavor:'Виноград',fg:'Фрукты',mg:20,ml:60,price:210,stock:4,cost:115}]},
+   {id:6,cat:'liq',brand:'Lumo',name:'Dessert Lab',price:140,hue:28,tags:['new'],added:10,photos:[],hidden:false,
+    desc:'Десертная линейка с насыщенными сливочными вкусами.',
+    variants:[{id:'6a',flavor:'Чизкейк',fg:'Десерт',mg:20,ml:30,stock:8,cost:80},{id:'6b',flavor:'Карамельный табак',fg:'Табак',mg:20,ml:30,stock:5,cost:80},{id:'6c',flavor:'Чизкейк',fg:'Десерт',mg:50,ml:30,stock:2,cost:80}]},
+   {id:7,cat:'cart',brand:'Nebula',name:'Картридж Nebula 0.8 Ом',price:70,hue:215,tags:[],added:2,photos:[],hidden:false,
+    desc:'Сменный картридж 2 мл для Nebula Pod X.',variants:[{id:'7a',ml:2,stock:40,cost:35}]},
+   {id:8,cat:'acc',brand:'Volt',name:'Испарители Volt 0.6 Ом, 5 шт',price:90,hue:285,tags:[],added:1,photos:[],hidden:false,
+    desc:'Комплект сменных испарителей для Volt Mini.',variants:[{id:'8a',stock:0,cost:50}]}
+  ];
+  const clients = {};
+  const addP = (c, n, r, ts) => { c.bonus += n; c.ledger.unshift({ts, n, r}); };
+  const mk = (id, name, phone, joined, refBy) => { const c = clients[id] = {id, name, phone, city:'Тирасполь', address:'', joined, refBy, refRewarded:false, bonus:0, ledger:[], blocked:false}; addP(c, settings.welcome, 'Приветственные баллы', joined); if (refBy) addP(c, settings.refFriend, 'Бонус за приглашение', joined); return c; };
+  mk(ME, U ? [U.first_name,U.last_name].filter(Boolean).join(' ') : 'Гость', '', now-40*DAY, null);
+  ['Андрей','Олег','Мария','Иван','Екатерина','Сергей','Дарья','Никита','Влад','Анна'].forEach((n,i)=>mk(String(101+i), n, '+373 77'+(7100000+i*73519), now-(36-i*3)*DAY, i<3?ME:null));
+  const r = rng(11), ids = Object.keys(clients).filter(id=>id!=='101' && id!==ME), pick = a => a[Math.floor(r()*a.length)];
+  const raw = [];
+  for (let k=0; k<34; k++){
+    const ts = now - Math.floor(r()*29*DAY) - 3600e3, cid = pick(ids), its = [];
+    const n = 1 + Math.floor(r()*3);
+    for (let j=0;j<n;j++){ const p = pick(products), v = pick(p.variants), q = 1 + (r()<.25?1:0); its.push({pid:p.id, vid:v.id, name:p.name, label:vLabel(v)||p.brand, price:v.price??p.price, cost:v.cost, qty:q}); }
+    raw.push({ts, cid, its, method:settings.pickupOn&&r()<.3?'pickup':'delivery', pay:r()<.65?'cash':'card'});
+  }
+  raw.push({ts:now-6*DAY, cid:ME, its:[{pid:1,vid:'1a',name:'Lumo 8000',label:'Манго-маракуйя · 20 мг',price:190,cost:120,qty:2}], method:'delivery', pay:'cash'});
+  raw.push({ts:now-2.5*3600e3, cid:ME, its:[{pid:5,vid:'5a',name:'Frost Liquid Salt',label:'Ледяной лимон · 20 мг · 30 мл',price:120,cost:65,qty:1}], method:'delivery', pay:'card'});
+  raw.sort((a,b)=>a.ts-b.ts);
+  const orders = [];
+  raw.forEach((x,i)=>{
+    const c = clients[x.cid], sub = x.its.reduce((a,t)=>a+t.price*t.qty,0), fresh = now - x.ts < 1.3*DAY;
+    let status = fresh ? Math.floor(r()*4) : 4; if (i===8) status = -1;
+    if (x.cid===ME) status = fresh ? 2 : 4;
+    const city = x.method==='delivery' ? (r()<.8?'Тирасполь':pick(settings.cities)) : 'Тирасполь';
+    const del = x.method==='delivery' && city!=='Тирасполь' ? settings.deliveryOther : 0;
+    const o = {id:1001+i, ts:x.ts, client:x.cid, name:c.name, phone:c.phone||'+373 777 00000', items:x.its, sub, disc:0, promo:null, bonus:0, del, total:sub+del,
+      cashback:Math.floor(sub*settings.cashback/100), method:x.method, city, address:x.method==='delivery'?pick(['ул. 25 Октября, 54','ул. Шевченко, 12, кв 7','пр. Мира, 9','ул. Ленина, 101','ул. Свердлова, 33']):'',
+      time:pick(settings.slots), pay:x.pay, comment:'', status, history:[{s:0,ts:x.ts,by:'Клиент'}], courier:null, paid:false, handed:true, note:''};
+    for (let s=1; s<=Math.max(0,status); s++) o.history.push({s, ts:x.ts+s*1800e3, by:s>=3&&x.method==='delivery'?'Курьер':'Алина'});
+    if (status===-1) o.history.push({s:-1, ts:x.ts+900e3, by:'Алина'});
+    if (x.method==='delivery' && status>=2) o.courier = r()<.6 ? '301' : '302';
+    if (status===4){ o.paid = true; addP(c, o.cashback, `Кэшбэк за заказ №${o.id}`, o.history.at(-1).ts);
+      if (o.pay==='cash' && o.courier && now - x.ts < 3*DAY) o.handed = false;
+      if (c.refBy && !c.refRewarded){ c.refRewarded = true; addP(clients[c.refBy], settings.refInviter, `Друг ${c.name} сделал первый заказ`, o.history.at(-1).ts); } }
+    orders.push(o);
+  });
+  const myActive = orders.filter(o=>o.client===ME).at(-1);
+  const chats = {};
+  chats[myActive.id] = {client:ME, order:myActive.id, unread:0, msgs:[{from:'op', t:`Здравствуйте! Заказ №${myActive.id} принят, собираем.`, ts:myActive.ts+600e3}]};
+  const q = orders.find(o=>o.status===1 && o.client!==ME);
+  if (q) chats[q.id] = {client:q.client, order:q.id, unread:1, msgs:[{from:'client', t:'Здравствуйте! Можно доставить после 18:00?', ts:q.ts+900e3}]};
+  const reviews = {
+    1:[{n:'Андрей',cid:'101',r:5,t:'Вкус яркий, хватает надолго.',ts:now-3*DAY},{n:'Мария',cid:'103',r:4,t:'Манго топ, черника слабее.',ts:now-7*DAY}],
+    3:[{n:'Иван',cid:'104',r:5,t:'Удобная, заряд держит два дня.',ts:now-12*DAY}],
+    5:[{n:'Олег',cid:'102',r:5,t:'Лимон с холодком — лучший.',ts:now-5*DAY}]};
+  const staff = [{id:OWNER_ID,name:'Владелец',role:'owner'},{id:'201',name:'Алина',role:'seller'},{id:'301',name:'Дима',role:'courier'},{id:'302',name:'Рома',role:'courier'}];
+  const promos = [{code:'WELCOME10',t:'pct',v:10,min:0,limit:0,used:3,active:true},{code:'VAPE50',t:'fix',v:50,min:300,limit:100,used:12,active:true}];
+  return {v:3, settings, cats, products, clients, orders, reviews, chats, staff, promos, log:[{ts:now-DAY,who:'Вы',text:'Магазин запущен'}], broadcasts:[], seq:1000+orders.length};
+}
+
+/* ================= ХРАНЕНИЕ ================= */
+let DB = null, S = null;
+const UI_K = LIVE ? UI_KEY + '_live' : UI_KEY;
+if (!LIVE){ try{ DB = JSON.parse(localStorage.getItem(DB_KEY)); }catch(e){} if (!DB || DB.v!==3) DB = seed(); }
+try{ S = JSON.parse(localStorage.getItem(UI_K)); }catch(e){}
+S = Object.assign({age:false, theme:'dark', cart:[], fav:[], useBonus:false, promo:null, promoData:null, mode:'shop', as:ME, atab:null, per:'7', aof:'new', aoq:'', agq:'', agc:'all', acq:''}, S||{});
+let G = DB ? DB.settings : null;
+function save(){ try{ if (!LIVE) localStorage.setItem(DB_KEY, JSON.stringify(DB)); localStorage.setItem(UI_K, JSON.stringify(S)); }catch(e){ toast('Память браузера заполнена — уменьшите количество фото'); } }
+
+/* ================= ХЕЛПЕРЫ ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rub = n => `${Math.round(n).toLocaleString('ru-RU')} руб.`;
+const num = v => v==='' || v==null ? null : +v;
+const P = id => DB.products.find(p => p.id == id);
+const V = (p, vid) => p && p.variants.find(v => v.id == vid);
+const vPrice = (p, v) => v.price ?? p.price;
+const stock = p => p.variants.reduce((a, v) => a + (+v.stock||0), 0);
+const minPrice = p => Math.min(...p.variants.map(v => vPrice(p, v)));
+const reviews = id => DB.reviews[id] || [];
+const rating = id => { const r = reviews(id); return {n:r.length, avg:r.length ? (r.reduce((a,x)=>a+x.r,0)/r.length).toFixed(1) : null}; };
+function vLabel(v){ return [v.flavor, v.mg!=null?v.mg+' мг':null, v.ml!=null?v.ml+' мл':null, v.color].filter(Boolean).join(' · '); }
+const selOf = v => ({flavor:v.flavor, mg:v.mg, ml:v.ml, color:v.color});
+const pad = n => String(n).padStart(2,'0');
+const fmt = ts => { const d = new Date(ts); return `${pad(d.getDate())}.${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const fmtDay = ts => { const d = new Date(ts); return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`; };
+const hhmm = ts => { const d = new Date(ts); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const haptic = t => { try{ tg.HapticFeedback.impactOccurred(t||'light'); }catch(e){} };
+const cartCount = () => S.cart.reduce((a,i)=>a+i.qty,0);
+const me = () => DB.clients[ME];
+const myOrders = () => DB.orders.filter(o=>o.client===ME).sort((a,b)=>b.ts-a.ts);
+const catName = id => (DB.cats.find(c=>c.id===id)||{name:'—'}).name;
+const staffBy = id => DB.staff.find(s=>s.id===id);
+const oCost = o => o.items.reduce((a,i)=>a+(i.cost||0)*i.qty, 0);
+const oProfit = o => o.sub - o.disc - o.bonus - oCost(o);
+const sum = (a, f) => a.reduce((s,x)=>s+f(x), 0);
+const openLink = u => { try{ tg && tg.openLink ? tg.openLink(u) : window.open(u,'_blank'); }catch(e){ window.open(u,'_blank'); } };
+
+const IC = {
+ heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+ bag:'<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+ user:'<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
+ users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+ grid:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/>',
+ search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+ filter:'<circle cx="6" cy="7" r="2"/><path d="M11 7h9"/><circle cx="18" cy="17" r="2"/><path d="M4 17h9"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>', minus:'<path d="M5 12h14"/>',
+ back:'<path d="m15 18-6-6 6-6"/>', chev:'<path d="m9 18 6-6-6-6"/>',
+ chat:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>', send:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+ star:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',
+ trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+ truck:'<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+ clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>', pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+ gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C9 3 12 8 12 8s3-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
+ moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>', sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+ box:'<path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/>', check:'<path d="M20 6 9 17l-5-5"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>', copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+ phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"/>',
+ card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>', info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+ edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>', share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
+ chart:'<path d="M3 3v18h18"/><path d="M7 16v-4M12 16V8M17 16v-7"/>', tag:'<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4Z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+ dots:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+ wallet:'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+ mega:'<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>', shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>',
+ cog:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
+ download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+ list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>', image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
+ eyeoff:'<path d="M9.9 4.2A10 10 0 0 1 12 4c7 0 10 8 10 8a13 13 0 0 1-1.7 2.7M6.6 6.6A13 13 0 0 0 2 12s3 8 10 8a9.7 9.7 0 0 0 5.4-1.6"/><path d="m2 2 20 20"/>',
+ coins:'<circle cx="8" cy="8" r="6"/><path d="M18.1 10.4A6 6 0 1 1 10.3 18"/><path d="M7 6h1v4"/>',
+ cloud:'<path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.3 12.3 3.5 3.5 0 0 0 6.5 19Z"/>',
+ alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>',
+ exit:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>'
+};
+const ic = n => `<svg class="i" viewBox="0 0 24 24">${IC[n]}</svg>`;
+const logo = () => `<span class="logo">${ic('cloud')}</span>`;
+
+function art(p, gallery){
+  if (p.photos && p.photos.length) return gallery && p.photos.length>1 ? `<div class="gal">${p.photos.map(s=>`<img src="${s}" alt="">`).join('')}</div>` : `<img src="${p.photos[0]}" alt="">`;
+  const h = p.hue ?? 210, g = 'g'+p.id+'_'+(art.n=(art.n||0)+1);
+  const sh = {
+    disp:`<rect x="38" y="16" width="24" height="70" rx="12" fill="url(#${g})"/><rect x="44" y="8" width="12" height="12" rx="4" fill="url(#${g})" opacity=".75"/><rect x="44" y="60" width="12" height="3" rx="1.5" fill="#fff" opacity=".6"/>`,
+    pod:`<rect x="31" y="28" width="38" height="58" rx="15" fill="url(#${g})"/><rect x="42" y="12" width="16" height="20" rx="6" fill="url(#${g})" opacity=".75"/><circle cx="50" cy="62" r="5" fill="#fff" opacity=".55"/>`,
+    liq:`<rect x="33" y="40" width="34" height="46" rx="9" fill="url(#${g})"/><rect x="41" y="26" width="18" height="16" rx="3" fill="url(#${g})" opacity=".8"/><path d="M47 10h6l3 16h-12z" fill="url(#${g})" opacity=".6"/><rect x="39" y="54" width="22" height="16" rx="3" fill="#fff" opacity=".35"/>`,
+    cart:`<rect x="36" y="32" width="28" height="44" rx="10" fill="url(#${g})"/><rect x="44" y="18" width="12" height="16" rx="4" fill="url(#${g})" opacity=".75"/><rect x="42" y="44" width="16" height="18" rx="4" fill="#fff" opacity=".3"/>`,
+    acc:`<circle cx="50" cy="50" r="26" fill="url(#${g})"/><circle cx="50" cy="50" r="11" fill="#fff" opacity=".35"/><rect x="47" y="18" width="6" height="10" rx="2" fill="#fff" opacity=".5"/>`
+  }[p.cat] || `<rect x="30" y="30" width="40" height="40" rx="12" fill="url(#${g})"/>`;
+  return `<svg class="art" viewBox="0 0 100 100"><defs><linearGradient id="${g}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h} 95% 70%)"/><stop offset="1" stop-color="hsl(${h+35} 85% 42%)"/></linearGradient></defs><ellipse cx="50" cy="90" rx="22" ry="4" fill="#000" opacity=".25"/>${sh}</svg>`;
+}
+function tagsHtml(p){
+  const t = [];
+  if (stock(p) === 0) t.push(['out','Нет в наличии']);
+  else { if (p.tags.includes('hit')) t.push(['hit','Хит']); if (p.tags.includes('new')) t.push(['new','Новинка']); if (p.old) t.push(['sale','Скидка']); }
+  return `<div class="tags">${t.map(([c,l])=>`<span class="tag ${c}">${l}</span>`).join('')}</div>`;
+}
+function toast(t){ const el = $('#toast'); el.innerHTML = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(()=>el.classList.remove('show'), 3000); }
+function empty(i, h, t, btn=''){ return `<div class="empty"><div class="ei glass">${ic(i)}</div><h3>${h}</h3><div>${t}</div>${btn?`<div style="margin-top:18px">${btn}</div>`:''}</div>`; }
+function head(title, sub='', right='<div class="ph"></div>'){ return `<div class="phead"><button class="ibtn glass" onclick="A.back()">${ic('back')}</button><div class="t">${title}${sub?`<small>${sub}</small>`:''}</div>${right}</div>`; }
+const sw = (on, act) => `<button class="toggle ${on?'on':''}" onclick="${act}"></button>`;
+
+/* ================= БАЛЛЫ, ЛОГ, УВЕДОМЛЕНИЯ ================= */
+function addPoints(cid, n, r){ const c = DB.clients[cid]; if (!c || !n) return; c.bonus += n; c.ledger.unshift({ts:Date.now(), n, r}); }
+function log(text){ const s = staffBy(S.as); DB.log.unshift({ts:Date.now(), who:s?s.name:'Система', text}); DB.log.length = Math.min(DB.log.length, 400); }
+function notify(cid, text){ const c = DB.clients[cid]; toast(`🔔 Бот → ${cid===ME&&S.mode==='shop'?'вам':esc(c?c.name:'клиенту')}: ${esc(text)}`); }
+
+function ensureClient(){
+  if (DB.clients[ME]) return;
+  const c = DB.clients[ME] = {id:ME, name:U?[U.first_name,U.last_name].filter(Boolean).join(' '):'Гость', phone:'', city:G.cities[0], address:'', joined:Date.now(), refBy:null, refRewarded:false, bonus:0, ledger:[], blocked:false};
+  addPoints(ME, G.welcome, 'Приветственные баллы');
+  const sp = tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param;
+  if (sp && /^ref_/.test(sp)) applyRef(sp.slice(4), true);
+  save();
+}
+function applyRef(code, silent){
+  const c = me(), no = m => { if (silent) return false; throw new Error(m); };
+  if (!G.refOn) return no('Реферальная программа сейчас выключена');
+  if (code===ME) return no('Нельзя пригласить самого себя');
+  if (!DB.clients[code]) return no('Код не найден');
+  if (c.refBy) return no('Код друга уже применён');
+  if (myOrders().length) return no('Код действует только до первого заказа');
+  c.refBy = code; addPoints(ME, G.refFriend, 'Бонус за приглашение');
+  return true;
+}
+const refLink = id => `https://t.me/${G.bot}?startapp=ref_${id}`;
+const invitedBy = id => Object.values(DB.clients).filter(c=>c.refBy===id);
+
+/* ================= ЗАКАЗЫ: ЛОГИКА СТАТУСОВ ================= */
+const stName = (o, s=o.status) => s===-1 ? 'Отменён' : (s===3 && o.method==='pickup' ? 'Готов к выдаче' : ST[s]);
+const pillCls = o => o.status===4 ? 's4' : o.status===-1 ? 'sx' : o.status===0 ? 's0' : '';
+function setStatus(o, s){
+  const prev = o.status; o.status = s; const who = staffBy(S.as);
+  o.history.push({s, ts:Date.now(), by:S.mode==='admin'&&who?who.name:'Клиент'});
+  const c = DB.clients[o.client];
+  if (s===-1){
+    o.items.forEach(i=>{ const v = V(P(i.pid), i.vid); if (v) v.stock += i.qty; });
+    if (o.bonus) addPoints(o.client, o.bonus, `Возврат баллов, заказ №${o.id} отменён`);
+    if (o.promo){ const pr = DB.promos.find(x=>x.code===o.promo); if (pr && pr.used) pr.used--; }
+  }
+  if (s===4){
+    o.paid = true; if (o.pay==='cash' && o.courier) o.handed = false;
+    addPoints(o.client, o.cashback, `Кэшбэк за заказ №${o.id}`);
+    if (c && c.refBy && !c.refRewarded && G.refOn && o.total >= G.refMin){
+      c.refRewarded = true; addPoints(c.refBy, G.refInviter, `Друг ${c.name} сделал первый заказ`);
+      setTimeout(()=>notify(c.refBy, `ваш друг сделал первый заказ, +${G.refInviter} баллов`), 3200);
+    }
+  }
+  if (s===3 && o.method==='delivery'){ const ch = chatFor(o.id); ch.msgs.push({from:'sys', t:`Курьер ${(staffBy(o.courier)||{name:''}).name} подключился к чату`, ts:Date.now()}); }
+  const msg = s===4 ? `заказ №${o.id} выполнен, +${o.cashback} баллов. Оцените товары — ещё +${G.reviewBonus}!` : s===-1 ? `заказ №${o.id} отменён` : `заказ №${o.id} — «${stName(o)}»`;
+  notify(o.client, msg);
+  if (S.mode==='admin') log(`Заказ №${o.id}: ${stName(o,prev)} → ${stName(o)}`);
+  save();
+}
+function chatFor(id){ const o = DB.orders.find(x=>x.id==id); return DB.chats[id] = DB.chats[id] || {client:o?o.client:ME, order:o?o.id:null, unread:0, msgs:[]}; }
+
+/* =====================================================================
+   МАГАЗИН (покупатель)
+   ===================================================================== */
+let F = {q:'',cat:'all',brands:[],fg:[],mg:[],min:'',max:'',sort:'pop'};
+let PS = null, CO = null, RV = null, ED = null, SE = null, PE = null, BC = null;
+
+function shopProducts(){ return DB.products.filter(p=>!p.hidden); }
+function filtered(){
+  const q = F.q.trim().toLowerCase();
+  const l = shopProducts().filter(p =>
+    (F.cat==='all' || p.cat===F.cat) &&
+    (!q || [p.name,p.brand,...p.variants.map(v=>v.flavor||'')].join(' ').toLowerCase().includes(q)) &&
+    (!F.brands.length || F.brands.includes(p.brand)) &&
+    (!F.fg.length || p.variants.some(v=>F.fg.includes(v.fg))) &&
+    (!F.mg.length || p.variants.some(v=>F.mg.includes(v.mg))) &&
+    (F.min==='' || minPrice(p) >= +F.min) && (F.max==='' || minPrice(p) <= +F.max));
+  const sorts = {
+    pop:(a,b)=>(b.tags.includes('hit')-a.tags.includes('hit')) || (rating(b.id).n-rating(a.id).n),
+    cheap:(a,b)=>minPrice(a)-minPrice(b), exp:(a,b)=>minPrice(b)-minPrice(a),
+    new:(a,b)=>b.added-a.added, rate:(a,b)=>(+rating(b.id).avg||0)-(+rating(a.id).avg||0)};
+  const out = p => stock(p) > 0 ? 0 : 1;
+  return l.sort((a,b)=>out(a)-out(b) || sorts[F.sort](a,b));
+}
+const filterCount = () => F.brands.length + F.fg.length + F.mg.length + (F.min!==''?1:0) + (F.max!==''?1:0) + (F.sort!=='pop'?1:0);
+function card(p){
+  const r = rating(p.id), mp = minPrice(p), many = new Set(p.variants.map(v=>vPrice(p,v))).size > 1, out = stock(p)===0;
+  return `<div class="card glass" onclick="A.open(${p.id})">
+    <div class="pic">${art(p)}${tagsHtml(p)}<button class="fav ${S.fav.includes(p.id)?'on':''}" onclick="event.stopPropagation();A.fav(${p.id})">${ic('heart')}</button></div>
+    <div class="cbody"><div class="brand">${esc(p.brand)}</div><div class="pname">${esc(p.name)}</div>
+    <div class="rate">${ic('star')} ${r.avg||'—'} <span>(${r.n})</span></div>
+    <div class="prow"><div class="price">${p.old?`<s>${p.old} руб.</s>`:''}${many?'от ':''}${mp} <small>руб.</small></div>
+    <button class="add" ${out?'disabled':''} onclick="event.stopPropagation();A.quick(${p.id})">${ic('plus')}</button></div></div></div>`;
+}
+const gridHtml = list => list.length ? `<div class="grid">${list.map(card).join('')}</div>` : empty('search','Ничего не найдено','Измените запрос или сбросьте фильтры');
+
+function vCatalog(){
+  const fc = filterCount();
+  return `<header class="top"><div><div class="brandline">${logo()}${esc(G.name)}</div><h1>Каталог</h1></div>
+    <button class="ibtn glass" onclick="A.theme()">${ic(S.theme==='dark'?'sun':'moon')}</button></header>
+  <div class="promo glass"><div class="pi">${ic('gift')}</div><div><b>Кэшбэк ${G.cashback}% баллами</b><span>Бесплатная доставка по ${esc(G.freeCity==='Тирасполь'?'Тирасполю':G.freeCity)}</span></div></div>
+  <div class="srow"><label class="search glass">${ic('search')}<input placeholder="Вкус, бренд, модель" value="${esc(F.q)}" oninput="A.q(this.value)"></label>
+    <button class="fbtn glass" onclick="A.filters()">${ic('filter')}<span>Фильтр</span>${fc?`<i class="cnt">${fc}</i>`:''}</button></div>
+  <div class="chips">${[{id:'all',name:'Все'},...DB.cats].map(c=>`<button class="chip ${F.cat===c.id?'on':''}" onclick="A.cat('${c.id}')">${esc(c.name)}</button>`).join('')}</div>
+  <div id="grid">${gridHtml(filtered())}</div>`;
+}
+function sheetFilters(){
+  const ps = shopProducts();
+  const brands = [...new Set(ps.map(p=>p.brand))];
+  const mgs = [...new Set(ps.flatMap(p=>p.variants.map(v=>v.mg)).filter(x=>x!=null))].sort((a,b)=>a-b);
+  const sorts = [['pop','Популярные'],['cheap','Дешевле'],['exp','Дороже'],['new','Новинки'],['rate','По рейтингу']];
+  const o = (on, act, l) => `<button class="opt ${on?'on':''}" onclick="${act}">${esc(l)}</button>`;
+  return `<div class="grab"></div><div class="sh-head"><h3>Фильтры</h3><button class="link" onclick="A.fReset()">Сбросить</button></div>
+  <div class="opt-title">Сортировка</div><div class="opts">${sorts.map(([k,l])=>o(F.sort===k,`A.fSet('${k}')`,l)).join('')}</div>
+  <div class="opt-title">Бренд</div><div class="opts">${brands.map((b,i)=>o(F.brands.includes(b),`A.fTog('brands',${i})`,b)).join('')}</div>
+  <div class="opt-title">Вкус</div><div class="opts">${FG.map((b,i)=>o(F.fg.includes(b),`A.fTog('fg',${i})`,b)).join('')}</div>
+  <div class="opt-title">Крепость</div><div class="opts">${mgs.map((m,i)=>o(F.mg.includes(m),`A.fTog('mg',${i})`,m+' мг')).join('')}</div>
+  <div class="opt-title">Цена, руб.</div><div class="two">
+    <input class="inp" type="number" inputmode="numeric" placeholder="от" value="${F.min}" oninput="F.min=this.value;A.fCount()">
+    <input class="inp" type="number" inputmode="numeric" placeholder="до" value="${F.max}" oninput="F.max=this.value;A.fCount()"></div>
+  <button class="btn primary wide" id="fapply" onclick="A.closeSheet();A.tab('catalog')">Показать ${filtered().length}</button>`;
+}
+function filterLists(){ const ps = shopProducts(); return {brands:[...new Set(ps.map(p=>p.brand))], fg:FG, mg:[...new Set(ps.flatMap(p=>p.variants.map(v=>v.mg)).filter(x=>x!=null))].sort((a,b)=>a-b)}; }
+function vFav(){
+  const l = shopProducts().filter(p=>S.fav.includes(p.id));
+  return `<header class="top"><div><div class="sub">${l.length} товаров</div><h1>Избранное</h1></div></header>` +
+    (l.length ? gridHtml(l) : empty('heart','Пока пусто','Нажмите ♡ на товаре, чтобы сохранить его здесь',`<button class="btn primary" onclick="A.tab('catalog')">В каталог</button>`));
+}
+
+/* ---------- товар ---------- */
+function curV(){ const p = P(PS.id); return p.variants.find(x=>ATTRS.every(([k])=>x[k]==null||x[k]===PS.sel[k])) || p.variants[0]; }
+const attrVals = (p, a) => [...new Set(p.variants.map(x=>x[a]).filter(x=>x!=null&&x!==''))];
+const canReview = pid => DB.orders.some(o=>o.client===ME && o.status===4 && o.items.some(i=>i.pid===pid)) && !reviews(pid).some(x=>x.cid===ME);
+function pProduct(){
+  const p = P(PS.id); if (!p) return head('Товар') + empty('box','Товар не найден','');
+  const v = curV(), r = rating(p.id), price = vPrice(p,v);
+  const inCart = S.cart.filter(i=>i.vid===v.id).reduce((a,i)=>a+i.qty,0), left = v.stock - inCart;
+  const sels = ATTRS.map(([a,label]) => {
+    const vals = attrVals(p,a); if (!vals.length) return '';
+    return `<div class="opt-title">${label}</div><div class="opts">${vals.map((val,i)=>{
+      const on = PS.sel[a]===val, av = p.variants.some(x=>x[a]===val && x.stock>0);
+      const lab = a==='mg' ? val+' мг' : a==='ml' ? val+' мл' : val;
+      const hex = a==='color' ? ((p.variants.find(x=>x.color===val)||{}).hex || '#888') : '';
+      return a==='color'
+        ? `<button class="cdot ${on?'on':''} ${av?'':'na'}" style="--c:${esc(hex)}" onclick="A.sel('${a}',${i})"><i></i>${esc(lab)}</button>`
+        : `<button class="opt ${on?'on':''} ${av?'':'na'}" onclick="A.sel('${a}',${i})">${esc(lab)}</button>`;
+    }).join('')}</div>`;
+  }).join('');
+  const revs = reviews(p.id);
+  return head(esc(p.brand), esc(catName(p.cat)), `<button class="ibtn glass ${S.fav.includes(p.id)?'on':''}" onclick="A.fav(${p.id})">${ic('heart')}</button>`) +
+  `<div class="hero glass">${art(p,true)}${tagsHtml(p)}</div>
+  <h2>${esc(p.name)}</h2>
+  <div class="rate" style="font-size:14px">${ic('star')} ${r.avg||'нет оценок'} <span>· отзывов: ${r.n}</span></div>
+  <div class="price" style="font-size:26px;margin-top:10px">${price} <small>руб.</small> ${p.old&&v.price==null?`<s style="display:inline;font-size:15px;margin-left:6px">${p.old} руб.</s>`:''}</div>
+  ${sels}
+  <div class="stock ${v.stock?'':'out'}">${v.stock ? `В наличии: ${v.stock} шт.` : 'Нет в наличии — выберите другой вариант'}</div>
+  <div class="sect">Описание</div><div class="box glass"><p class="desc">${esc(p.desc)}</p></div>
+  <div class="sect">Отзывы</div><div class="box glass">
+    ${revs.length ? revs.map(x=>`<div class="rv"><div class="rv-h"><span>${esc(x.n)}</span><span class="rv-s">${'★'.repeat(x.r)}${'☆'.repeat(5-x.r)}</span></div><p>${esc(x.t)}</p></div>`).join('') : '<p class="desc">Отзывов пока нет</p>'}
+    ${canReview(p.id) ? `<button class="btn primary wide" style="margin-top:12px" onclick="A.review(${p.id})">${ic('star')} Написать отзыв</button>` : `<p class="hint" style="margin-top:10px;padding:0">Отзыв можно оставить после получения заказа с этим товаром</p>`}
+  </div>
+  <div class="bbar glass">
+    <div class="stepper"><button onclick="A.pq(-1)">${ic('minus')}</button><b>${PS.qty}</b><button onclick="A.pq(1)">${ic('plus')}</button></div>
+    <button class="btn primary" ${left<=0?'disabled':''} onclick="A.addCur()">${left<=0 ? (v.stock?'Всё уже в корзине':'Нет в наличии') : 'В корзину · '+rub(price*PS.qty)}</button>
+  </div>`;
+}
+function sheetReview(){
+  const p = P(RV.pid);
+  return `<div class="grab"></div><div class="sh-head"><h3>Отзыв</h3><button class="ibtn sm glass" onclick="A.closeSheet()">${ic('x')}</button></div>
+  <p class="desc" style="margin-top:6px">${esc(p.name)}</p>
+  <div class="stars">${[1,2,3,4,5].map(n=>`<button class="${n<=RV.r?'on':''}" onclick="A.rvStar(${n})">${ic('star')}</button>`).join('')}</div>
+  <textarea class="inp" placeholder="Расскажите о вкусе, качестве, доставке" oninput="RV.t=this.value">${esc(RV.t)}</textarea>
+  ${G.reviewBonus?`<p class="hint" style="margin-top:8px">+${G.reviewBonus} баллов за отзыв</p>`:''}
+  <button class="btn primary wide" onclick="A.rvSend()">Отправить</button>`;
+}
+
+/* ---------- корзина ---------- */
+function cartSub(){ return S.cart.reduce((a,i)=>{ const p=P(i.pid), v=V(p,i.vid); return p&&v ? a + vPrice(p,v)*i.qty : a; }, 0); }
+function calc(del=0){
+  const sub = cartSub(), pr = S.promo && S.promoData && S.promoData.code===S.promo ? S.promoData : null, prOk = pr && sub >= (pr.min||0);
+  const disc = prOk ? (pr.t==='pct' ? Math.round(sub*pr.v/100) : Math.min(pr.v,sub)) : 0;
+  const base = sub - disc, bonus = S.useBonus ? Math.max(0, Math.min(me().bonus, Math.floor(base*G.maxBonus/100))) : 0, pay = base - bonus;
+  return {sub, disc, bonus, del, total: pay + del, cashback: Math.floor(pay*G.cashback/100), prOk, pr};
+}
+function vCart(){
+  S.cart = S.cart.filter(i=>V(P(i.pid),i.vid));
+  if (!S.cart.length) return `<header class="top"><div><h1>Корзина</h1></div></header>` + empty('bag','Корзина пуста','Добавьте товары из каталога',`<button class="btn primary" onclick="A.tab('catalog')">В каталог</button>`);
+  const c = calc(), avail = Math.min(me().bonus, Math.floor((c.sub-c.disc)*G.maxBonus/100));
+  return `<header class="top"><div><div class="sub">${cartCount()} шт.</div><h1>Корзина</h1></div><button class="link" onclick="A.clearCart()">Очистить</button></header>
+  ${S.cart.map((i,idx)=>{ const p=P(i.pid), v=V(p,i.vid); return `<div class="ci glass">
+    <div class="th" onclick="A.open(${p.id})">${art(p)}</div>
+    <div class="info"><div class="pname">${esc(p.name)}</div><div class="vl">${esc(vLabel(v))||esc(p.brand)}</div>
+    <div class="bot"><div class="price">${rub(vPrice(p,v)*i.qty)}</div>
+      <div class="stepper sm"><button onclick="A.cq(${idx},-1)">${ic(i.qty>1?'minus':'trash')}</button><b>${i.qty}</b><button onclick="A.cq(${idx},1)">${ic('plus')}</button></div></div></div></div>`; }).join('')}
+  <div class="sect">Промокод</div>
+  <div class="form glass">${c.pr ? `<div class="applied" ${c.prOk?'':'style="color:var(--warn)"'}><span>${c.prOk?'✓':'!'} ${esc(c.pr.code)} · ${c.pr.t==='pct'?'−'+c.pr.v+'%':'−'+c.pr.v+' руб.'}${c.prOk?'':` (от ${c.pr.min} руб.)`}</span><button class="ibtn sm" onclick="A.promoOff()">${ic('x')}</button></div>`
+    : `<div class="irow"><input class="inp" id="promo" placeholder="Введите промокод" style="text-transform:uppercase"><button class="btn primary" style="height:50px" onclick="A.promo()">OK</button></div>`}</div>
+  <div class="sect">Баллы</div>
+  <div class="form glass"><div class="sw"><div><b>Списать баллы</b><span>Доступно ${me().bonus} · можно до ${Math.max(0,avail)} руб. (${G.maxBonus}% суммы)</span></div>${sw(S.useBonus,'A.useBonus()')}</div></div>
+  <div class="sect">Итого</div>
+  <div class="rows glass">
+    <div class="row"><span>Товары</span><b>${rub(c.sub)}</b></div>
+    ${c.disc?`<div class="row green"><span>Промокод</span><b>−${rub(c.disc)}</b></div>`:''}
+    ${c.bonus?`<div class="row green"><span>Баллами</span><b>−${rub(c.bonus)}</b></div>`:''}
+    <div class="row"><span>Доставка</span><b>при оформлении</b></div>
+    <div class="row total"><span>К оплате</span><b>${rub(c.total)}</b></div>
+    <div class="row green"><span>Кэшбэк после получения</span><b>+${c.cashback} баллов</b></div>
+  </div>
+  ${G.minOrder && c.sub < G.minOrder ? `<p class="hint" style="margin-top:10px;color:var(--warn)">Минимальная сумма заказа — ${rub(G.minOrder)}</p>`:''}
+  <button class="btn primary wide" style="margin-top:16px" onclick="A.checkout()">Оформить заказ</button>`;
+}
+
+/* ---------- оформление ---------- */
+const delCost = () => CO.method==='delivery' && CO.city!==G.freeCity ? +G.deliveryOther : 0;
+function pCheckout(){
+  const c = calc(delCost());
+  const seg = (k, val, l) => `<button class="${CO[k]===val?'on':''}" onclick="A.co('${k}','${val}')">${l}</button>`;
+  return head('Оформление') +
+  `<div class="sect">Получатель</div>
+  <div class="form glass">
+    <input class="inp" placeholder="Имя" value="${esc(CO.name)}" oninput="CO.name=this.value">
+    <div class="irow"><input class="inp" type="tel" placeholder="+373 …" value="${esc(CO.phone)}" oninput="CO.phone=this.value">
+      <button class="ibtn primary" onclick="A.share()">${ic('phone')}</button></div>
+    <div class="hint">Кнопка справа — взять номер из Telegram</div>
+  </div>
+  <div class="sect">${G.pickupOn?'Способ получения':'Доставка'}</div>
+  ${G.pickupOn?`<div class="seg glass" style="margin-bottom:10px">${seg('method','delivery','Доставка')}${seg('method','pickup','Самовывоз')}</div>`:''}
+  ${CO.method==='delivery' ? `<div class="form glass">
+      <select class="inp" onchange="CO.city=this.value;A.r()">${G.cities.map(x=>`<option ${x===CO.city?'selected':''}>${esc(x)}</option>`).join('')}</select>
+      <input class="inp" placeholder="Улица, дом, квартира" value="${esc(CO.address)}" oninput="CO.address=this.value">
+      <div class="hint">${CO.city===G.freeCity?'Доставка по городу — бесплатно':'Доставка в '+esc(CO.city)+' — '+rub(G.deliveryOther)}</div></div>`
+    : `<div class="box glass"><div class="info-row">${ic('pin')}<span>${esc(G.pickup)}</span></div><div class="info-row">${ic('clock')}<span>${esc(G.hours)}</span></div></div>`}
+  <div class="sect">Время</div>
+  <div class="opts">${G.slots.map((s,i)=>`<button class="opt ${CO.time===s?'on':''}" onclick="A.slot(${i})">${esc(s)}</button>`).join('')}</div>
+  <div class="sect">Оплата</div>
+  <div class="seg glass">${seg('pay','cash','Наличными')}${seg('pay','card','Переводом на карту')}</div>
+  <div class="hint" style="margin-top:8px">${CO.pay==='cash'?'Оплата при получении':'Реквизиты появятся в заказе после подтверждения оператором'}</div>
+  <div class="sect">Комментарий</div>
+  <textarea class="inp glass" placeholder="Подъезд, домофон, пожелания" oninput="CO.comment=this.value">${esc(CO.comment)}</textarea>
+  <div class="sect">Сумма</div>
+  <div class="rows glass">
+    <div class="row"><span>Товары</span><b>${rub(c.sub)}</b></div>
+    ${c.disc?`<div class="row green"><span>Промокод</span><b>−${rub(c.disc)}</b></div>`:''}
+    ${c.bonus?`<div class="row green"><span>Баллами</span><b>−${rub(c.bonus)}</b></div>`:''}
+    <div class="row"><span>Доставка</span><b>${c.del?rub(c.del):'бесплатно'}</b></div>
+    <div class="row total"><span>К оплате</span><b>${rub(c.total)}</b></div>
+  </div>
+  <label class="agree"><input type="checkbox" ${CO.agree?'checked':''} onchange="CO.agree=this.checked">Подтверждаю, что мне есть 18 лет, и готов(а) предъявить документ при получении</label>
+  <div class="bbar glass"><button class="btn primary" onclick="A.place()">Подтвердить · ${rub(c.total)}</button></div>`;
+}
+function pSuccess({id}){
+  return `<div class="center"><div class="done-ic">${ic('check')}</div><h2>Заказ №${id} оформлен</h2>
+  <p class="desc" style="margin:8px 0 26px">Оператор скоро подтвердит заказ. Статусы будут приходить сообщениями от бота.</p>
+  <button class="btn primary wide" onclick="A.goOrder(${id})">Открыть заказ</button>
+  <button class="btn glass wide" onclick="A.tab('catalog')">Вернуться в каталог</button></div>`;
+}
+
+/* ---------- заказы клиента ---------- */
+const needReview = o => o.status===4 && o.items.some(i=>canReview(i.pid));
+function pOrders(){
+  const os = myOrders();
+  return head('Мои заказы') + (os.length ? os.map(o=>`<button class="oc glass" onclick="A.goOrder(${o.id})">
+    <div class="oc-h"><span>Заказ №${o.id}</span><span class="pill ${pillCls(o)}">${stName(o)}</span></div>
+    <div class="oc-m"><span>${fmt(o.ts)} · ${o.items.reduce((a,i)=>a+i.qty,0)} шт.</span><b style="color:var(--text)">${rub(o.total)}</b></div>
+    ${needReview(o)?`<div class="oc-r">★ Оцените товары и получите баллы</div>`:''}</button>`).join('')
+    : empty('box','Заказов пока нет','Оформите первый заказ',`<button class="btn primary" onclick="A.tab('catalog')">В каталог</button>`));
+}
+function timeline(o){
+  const steps = o.status===-1 ? [{l:'Новый',done:true,ts:o.ts},{l:'Отменён',done:true,cur:true,ts:(o.history.at(-1)||{}).ts}]
+    : ST.map((_,s)=>{ const h = o.history.filter(h=>h.s===s).at(-1); return {l:stName(o,s), done:s<=o.status, cur:s===o.status, ts:h&&h.ts, by:h&&h.by}; });
+  return `<div class="tl glass">${steps.map(s=>`<div class="st ${s.done?'done':''} ${s.cur?'cur':''}"><div class="d">${s.done?ic('check'):''}</div><div class="l">${s.l}${s.ts?`<small>${fmt(s.ts)}${S.mode==='admin'&&s.by?' · '+esc(s.by):''}</small>`:''}</div></div>`).join('')}</div>`;
+}
+function orderRows(o, admin){
+  return `<div class="rows glass" style="margin-top:12px">
+    <div class="row"><span>Товары</span><b>${rub(o.sub)}</b></div>
+    ${o.disc?`<div class="row green"><span>Промокод ${esc(o.promo)}</span><b>−${rub(o.disc)}</b></div>`:''}
+    ${o.bonus?`<div class="row green"><span>Баллами</span><b>−${rub(o.bonus)}</b></div>`:''}
+    <div class="row"><span>Доставка</span><b>${o.del?rub(o.del):'бесплатно'}</b></div>
+    <div class="row total"><span>Итого</span><b>${rub(o.total)}</b></div>
+    ${admin==='owner'?`<div class="row"><span>Закупка</span><b>${rub(oCost(o))}</b></div><div class="row green"><span>Прибыль</span><b>${rub(oProfit(o))}</b></div>`:''}
+    <div class="row green"><span>Кэшбэк</span><b>${o.status===4?'начислено':'будет'} +${o.cashback}</b></div>
+  </div>`;
+}
+function pOrder({id}){
+  const o = DB.orders.find(x=>x.id===id); if (!o) return head('Заказ');
+  const courier = o.status===3 && o.method==='delivery' && o.courier;
+  const cs = staffBy(o.courier);
+  return head(`Заказ №${o.id}`, fmt(o.ts)) + timeline(o) +
+  `${o.status!==-1 && o.status<4 ? `<button class="btn primary wide" style="margin-top:12px" onclick="A.chat('${o.id}')">${ic('chat')} Чат с ${courier?'курьером':'оператором'}</button>` : ''}
+  ${o.pay==='card' && o.status>=1 && o.status<4 && !o.paid ? `<div class="box glass" style="margin-top:12px"><b>Реквизиты для перевода</b><p class="desc" style="margin-top:6px">${esc(G.card)}<br>Сумма: <b style="color:var(--text)">${rub(o.total)}</b>. В комментарии к переводу укажите №${o.id}.</p></div>`:''}
+  <div class="sect">Товары</div>
+  ${o.items.map(i=>{ const p=P(i.pid)||{id:i.pid,cat:'acc',hue:210,photos:[]}; return `<div class="ci glass"><div class="th">${art(p)}</div><div class="info"><div class="pname">${esc(i.name)}</div><div class="vl">${esc(i.label)} · ${i.qty} шт.</div>
+    <div class="bot"><div class="price">${rub(i.price*i.qty)}</div>${o.status===4&&canReview(i.pid)?`<button class="link" onclick="A.review(${i.pid})">Оценить ★</button>`:''}</div></div></div>`; }).join('')}
+  <div class="sect">Детали</div>
+  <div class="box glass">
+    <div class="info-row">${ic(o.method==='delivery'?'truck':'pin')}<span>${o.method==='delivery'?esc(o.city+', '+o.address):'Самовывоз · '+esc(G.pickup)}</span></div>
+    <div class="info-row">${ic('clock')}<span>${esc(o.time)}</span></div>
+    <div class="info-row">${ic('card')}<span>${o.pay==='cash'?'Наличными при получении':'Переводом на карту'}${o.paid?' · оплачено':''}</span></div>
+    ${cs && o.method==='delivery' ? `<div class="info-row">${ic('user')}<span>Курьер: ${esc(cs.name)}</span></div>`:''}
+    ${o.comment?`<div class="info-row">${ic('edit')}<span>${esc(o.comment)}</span></div>`:''}
+  </div>
+  ${orderRows(o)}
+  <button class="btn glass wide" style="margin-top:12px" onclick="A.repeat(${o.id})">Повторить заказ</button>
+  ${o.status>=0 && o.status<=1 ? `<button class="btn glass wide danger" onclick="A.cancelMy(${o.id})">Отменить заказ</button>` : ''}`;
+}
+
+/* ---------- чат ---------- */
+function chatHtml(key, staffSide){
+  const ch = DB.chats[key] || {msgs:[]}, o = DB.orders.find(x=>String(x.id)===String(key));
+  const mine = m => staffSide ? (m.from==='op'||m.from==='courier') : m.from==='client';
+  const label = m => m.from==='courier' ? 'Курьер' : m.from==='op' ? 'Оператор' : (o?o.name:(DB.clients[ch.client]||{}).name||'Клиент');
+  return `<div class="msgs">${ch.msgs.map(m=> m.from==='sys' ? `<div class="msg sys">${esc(m.t)}</div>`
+    : `<div class="msg ${mine(m)?'me':'op glass'}">${!mine(m)||staffSide?`<span class="who">${esc(label(m))}</span>`:''}${esc(m.t)}<small>${hhmm(m.ts)}</small></div>`).join('') || '<div class="msg sys">Напишите вопрос — оператор ответит в рабочее время</div>'}</div>
+  <div class="bbar glass"><input class="cin" id="msg" placeholder="Сообщение" onkeydown="if(event.key==='Enter')A.send('${key}')"><button class="ibtn primary" style="width:46px;height:46px" onclick="A.send('${key}')">${ic('send')}</button></div>`;
+}
+function pChat({key}){
+  const o = DB.orders.find(x=>String(x.id)===key);
+  const cs = o && o.status===3 && o.method==='delivery' && staffBy(o.courier);
+  return head(cs ? 'Курьер '+esc(cs.name) : 'Оператор', o ? `Заказ №${o.id}` : 'Поддержка ' + esc(G.name)) + chatHtml(key, false);
+}
+
+/* ---------- профиль ---------- */
+function vProfile(){
+  const c = me(), nm = c.name || 'Покупатель', ini = nm.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+  const active = myOrders().filter(o=>o.status>=0&&o.status<4).length;
+  const inv = invitedBy(ME), isStaff = DB.staff.some(s=>s.id===ME);
+  const mi = (i, l, act, r='') => `<button class="mi" onclick="${act}"><span class="mic">${ic(i)}</span>${l}<span class="mi-r">${r}${ic('chev')}</span></button>`;
+  return `<header class="top"><div><div class="brandline">${logo()}${esc(G.name)}</div><h1>Профиль</h1></div></header>
+  <div class="pcard glass"><div class="ava">${U&&U.photo_url?`<img src="${esc(U.photo_url)}" alt="">`:esc(ini)}</div>
+    <div style="flex:1;min-width:0"><div class="pname" style="font-size:18px">${esc(nm)}</div><div class="hint" style="padding:0">${U&&U.username?'@'+esc(U.username):(c.phone?esc(c.phone):'Заполните данные')}</div></div>
+    <button class="ibtn sm glass" onclick="A.go('mydata')">${ic('edit')}</button></div>
+  <button class="bcard glass" onclick="A.go('points')"><div style="font-weight:700;opacity:.9;display:flex;justify-content:space-between">Бонусные баллы <span style="font-size:13px">История ›</span></div><div class="big">${c.bonus}</div>
+    <p>1 балл = 1 руб. · кэшбэк ${G.cashback}% с каждого заказа · можно оплатить до ${G.maxBonus}% суммы</p></button>
+  ${G.refOn ? `<div class="ref glass"><div class="irow" style="justify-content:space-between"><b>Приведи друга</b><button class="link" style="flex:none" onclick="A.go('ref')">Подробнее ›</button></div>
+    <span class="d">Друг получает ${G.refFriend} баллов на первый заказ, вы — ${G.refInviter} баллов после его покупки. Приглашено: ${inv.length}</span>
+    <div class="reflink"><code>${esc(refLink(ME))}</code><button class="ibtn sm glass" onclick="A.copyRef()">${ic('copy')}</button><button class="ibtn sm primary" onclick="A.shareRef()">${ic('share')}</button></div></div>` : ''}
+  <div class="menu glass">
+    ${mi('box','Мои заказы',"A.go('orders')",active?`<span class="pill">${active} активн.</span>`:myOrders().length)}
+    ${mi('heart','Избранное',"A.tab('fav')",S.fav.length||'')}
+    ${mi('user','Мои данные',"A.go('mydata')")}
+    ${mi('chat','Поддержка',"A.chat('s_${ME}')")}
+    ${mi('info','О магазине',"A.go('about')")}
+  </div>
+  ${isStaff ? `<div class="menu glass">${mi('shield','Панель управления',"A.admin()")}</div>` : ''}
+  <div class="sect">Тема</div>
+  <div class="seg glass"><button class="${S.theme==='dark'?'on':''}" onclick="A.setTheme('dark')">${ic('moon')} Тёмная</button><button class="${S.theme==='light'?'on':''}" onclick="A.setTheme('light')">${ic('sun')} Светлая</button></div>
+  ${LIVE?'':'<button class="demo" onclick="A.reset()">Демо: сбросить все данные</button>'}`;
+}
+function pPoints(){
+  const c = me();
+  return head('Баллы', `Баланс: ${c.bonus}`) + `<div class="box glass">
+    <div class="info-row">${ic('coins')}<span class="x">Кэшбэк ${G.cashback}% с каждого выполненного заказа</span></div>
+    <div class="info-row">${ic('card')}<span class="x">Баллами можно оплатить до ${G.maxBonus}% заказа, 1 балл = 1 руб.</span></div>
+    ${G.reviewBonus?`<div class="info-row">${ic('star')}<span class="x">+${G.reviewBonus} баллов за отзыв о купленном товаре</span></div>`:''}
+    ${G.refOn?`<div class="info-row">${ic('users')}<span class="x">+${G.refInviter} баллов за каждого друга после его первой покупки</span></div>`:''}
+  </div>
+  <div class="sect">История</div>
+  <div class="box glass">${c.ledger.length ? c.ledger.map(l=>`<div class="logrow" style="display:flex;justify-content:space-between;gap:10px"><div>${esc(l.r)}<small>${fmt(l.ts)}</small></div><b class="${l.n>0?'pos':'neg'}">${l.n>0?'+':''}${l.n}</b></div>`).join('') : '<p class="desc">Пока пусто</p>'}</div>`;
+}
+function pRef(){
+  const c = me(), inv = invitedBy(ME), done = inv.filter(x=>x.refRewarded);
+  const earned = c.ledger.filter(l=>/^Друг /.test(l.r)).reduce((a,l)=>a+l.n,0);
+  const mask = n => n ? n[0] + '•••' + (n.length>1?n.slice(-1):'') : 'Друг';
+  return head('Приведи друга') + `<div class="box glass">
+    <p class="desc" style="color:var(--text);font-weight:600">Как это работает</p>
+    <div class="info-row">${ic('share')}<span class="x">Отправьте другу свою ссылку</span></div>
+    <div class="info-row">${ic('gift')}<span class="x">Друг сразу получает <b>${G.refFriend} баллов</b> на первый заказ</span></div>
+    <div class="info-row">${ic('coins')}<span class="x">Когда друг получит первый заказ${G.refMin?` от ${rub(G.refMin)}`:''}, вам начислится <b>${G.refInviter} баллов</b></span></div>
+    <div class="reflink"><code>${esc(refLink(ME))}</code><button class="ibtn sm glass" onclick="A.copyRef()">${ic('copy')}</button><button class="ibtn sm primary" onclick="A.shareRef()">${ic('share')}</button></div>
+  </div>
+  <div class="tiles" style="margin-top:12px">
+    <div class="tile glass"><div class="k">Приглашено</div><div class="v">${inv.length}</div></div>
+    <div class="tile glass"><div class="k">Сделали заказ</div><div class="v">${done.length}</div></div>
+    <div class="tile glass wide"><div class="k">Заработано баллов</div><div class="v pos">+${earned}</div></div>
+  </div>
+  <div class="sect">Ваши друзья</div>
+  ${inv.length ? inv.map(x=>`<div class="li glass"><div class="ava sm">${esc((x.name||'?')[0])}</div><div class="m"><b>${esc(mask(x.name))}</b><span>с ${fmtDay(x.joined)}</span></div>
+    <span class="pill ${x.refRewarded?'ok':'mute'}">${x.refRewarded?'+'+G.refInviter+' начислено':'ждём первый заказ'}</span></div>`).join('') : '<div class="box glass"><p class="desc">Пока никого — поделитесь ссылкой</p></div>'}
+  ${!c.refBy && !myOrders().length ? `<div class="sect">Есть код друга?</div><div class="form glass"><div class="irow"><input class="inp" id="refcode" placeholder="Например: 101"><button class="btn primary" style="height:50px" onclick="A.refCode()">OK</button></div><div class="hint">Код — это цифры после ref_ в ссылке друга</div></div>`
+    : c.refBy ? `<p class="hint" style="margin-top:12px">Вас пригласил: ${esc(mask((DB.clients[c.refBy]||{}).name))}</p>` : ''}`;
+}
+function pMyData(){
+  const p = me();
+  return head('Мои данные') + `<div class="form glass">
+    <input class="inp" id="d-name" placeholder="Имя" value="${esc(p.name)}">
+    <input class="inp" id="d-phone" type="tel" placeholder="Телефон" value="${esc(p.phone)}">
+    <select class="inp" id="d-city">${G.cities.map(x=>`<option ${x===p.city?'selected':''}>${esc(x)}</option>`).join('')}</select>
+    <input class="inp" id="d-addr" placeholder="Адрес доставки" value="${esc(p.address)}"></div>
+    <div class="hint" style="margin-top:8px">Данные подставятся при оформлении заказа</div>
+    <div class="bbar glass"><button class="btn primary" onclick="A.saveData()">Сохранить</button></div>`;
+}
+function pAbout(){
+  const r = (i,t) => `<div class="info-row">${ic(i)}<span class="x">${t}</span></div>`;
+  return head('О магазине') + `<div class="box glass">
+    ${r('clock',esc(G.hours))}${G.pickupOn&&G.pickup?r('pin','Самовывоз: '+esc(G.pickup)):r('truck','Работаем только на доставку')}
+    ${G.phone?r('phone',esc(G.phone)):''}
+    ${r('truck',`Доставка по городу ${esc(G.freeCity)} — бесплатно, по ПМР — ${rub(G.deliveryOther)}`)}
+    ${r('card','Оплата наличными при получении или переводом на карту')}
+    ${r('gift',`Кэшбэк ${G.cashback}% баллами${G.reviewBonus?`, +${G.reviewBonus} баллов за отзыв`:''}`)}</div>
+    <div class="box glass" style="margin-top:12px"><p class="desc"><b style="color:var(--text)">18+.</b> Никотинсодержащая продукция продаётся только совершеннолетним. При получении заказа курьер или продавец проверит документ.</p></div>`;
+}
+
+/* =====================================================================
+   АДМИН-ПАНЕЛЬ
+   ===================================================================== */
+const ATABS = {
+  owner:[['dash','chart','Обзор'],['orders','box','Заказы'],['goods','tag','Товары'],['clients','users','Клиенты'],['more','dots','Ещё']],
+  seller:[['orders','box','Заказы'],['goods','tag','Товары'],['clients','users','Клиенты'],['more','dots','Ещё']],
+  courier:[['deliv','truck','Доставки'],['cash','wallet','Касса'],['more','dots','Ещё']]};
+const cur = () => staffBy(S.as) || staffBy(ME);
+const role = () => (cur()||{}).role;
+const isOwner = () => role()==='owner';
+function demoBar(){
+  if (LIVE) return '';
+  if (!DB.staff.some(s=>s.id===ME && s.role==='owner')) return '';
+  const pick = r => DB.staff.find(s=>s.role===r);
+  return `<div class="demo-bar glass">Демо-роль: ${['owner','seller','courier'].map(r=>{ const s = r==='owner'?staffBy(ME):pick(r); return s?`<button class="${role()===r?'on':''}" onclick="A.as('${s.id}')">${ROLES[r]}${r!=='owner'?' · '+esc(s.name):''}</button>`:''; }).join('')}</div>`;
+}
+function aTop(title, sub, right=''){ return demoBar() + `<header class="top"><div><div class="sub">${sub}</div><h1>${title}</h1></div>${right}</header>`; }
+const unreadChats = () => Object.values(DB.chats).reduce((a,c)=>a+(c.unread||0),0);
+const courierCash = id => DB.orders.filter(o=>o.courier===id && o.status===4 && o.pay==='cash' && !o.handed);
+const lowList = () => DB.products.flatMap(p=>p.variants.filter(v=>(+v.stock||0)<=G.lowStock).map(v=>({p,v})));
+
+/* ---------- обзор (владелец) ---------- */
+function perFrom(){ const d = new Date(); d.setHours(0,0,0,0); return {today:d.getTime(), '7':d.getTime()-6*DAY, '30':d.getTime()-29*DAY, all:0}[S.per]; }
+function aDash(){
+  const from = perFrom(), os = DB.orders.filter(o=>o.ts>=from), done = os.filter(o=>o.status===4);
+  const rev = sum(done,o=>o.total), prof = sum(done,oProfit), cnt = done.length, qty = sum(done,o=>sum(o.items,i=>i.qty));
+  const newCl = Object.values(DB.clients).filter(c=>c.joined>=from).length;
+  const waiting = DB.orders.filter(o=>o.status===0).length, inWork = DB.orders.filter(o=>o.status>=1&&o.status<=3);
+  const days = S.per==='today' ? 1 : S.per==='7' ? 7 : 30, d0 = new Date(); d0.setHours(0,0,0,0);
+  const bars = Array.from({length:days},(_,i)=>{ const s = d0.getTime()-(days-1-i)*DAY; return {s, v:sum(DB.orders.filter(o=>o.status===4&&o.ts>=s&&o.ts<s+DAY),o=>o.total)}; });
+  const mx = Math.max(1,...bars.map(b=>b.v)), bw = 300/days;
+  const top = {}; done.forEach(o=>o.items.forEach(i=>{ const t = top[i.pid] = top[i.pid]||{n:i.name,q:0,r:0}; t.q+=i.qty; t.r+=i.price*i.qty; }));
+  const topL = Object.values(top).sort((a,b)=>b.r-a.r).slice(0,5), tmx = Math.max(1,...topL.map(t=>t.r));
+  const bycat = {}; done.forEach(o=>o.items.forEach(i=>{ const p = P(i.pid); const k = p?catName(p.cat):'—'; bycat[k]=(bycat[k]||0)+i.price*i.qty; }));
+  const catL = Object.entries(bycat).sort((a,b)=>b[1]-a[1]), cmx = Math.max(1,...catL.map(c=>c[1]));
+  const cashS = sum(done.filter(o=>o.pay==='cash'),o=>o.total), cardS = rev - cashS;
+  const onHands = sum(DB.staff.filter(s=>s.role==='courier'),s=>sum(courierCash(s.id),o=>o.total));
+  const led = Object.values(DB.clients).flatMap(c=>c.ledger.filter(l=>l.ts>=from));
+  const given = sum(led.filter(l=>l.n>0),l=>l.n), spent = -sum(led.filter(l=>l.n<0&&/^Оплата/.test(l.r)),l=>l.n);
+  const low = lowList();
+  const tile = (k,v,s='',cls='') => `<div class="tile glass ${cls}"><div class="k">${k}</div><div class="v cnum">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;
+  return aTop('Обзор', esc(G.name)+' · владелец', `<button class="ibtn glass" onclick="A.export()">${ic('download')}</button>`) +
+  `<div class="chips">${[['today','Сегодня'],['7','7 дней'],['30','30 дней'],['all','Всё время']].map(([k,l])=>`<button class="chip ${S.per===k?'on':''}" onclick="A.per('${k}')">${l}</button>`).join('')}</div>
+  ${waiting?`<button class="li glass" onclick="A.aof('new');A.atab('orders')"><span class="mic" style="background:rgba(255,176,32,.2);color:var(--warn)">${ic('box')}</span><div class="m"><b>Новых заказов: ${waiting}</b><span>Ожидают подтверждения</span></div>${ic('chev')}</button>`:''}
+  <div class="tiles">
+    ${tile('Выручка', rub(rev), 'выполненные заказы')}${tile('Прибыль', rub(prof), rev?Math.round(prof/Math.max(1,rev-sum(done,o=>o.del))*100)+'% маржа':'')}
+    ${tile('Заказов', cnt, 'в работе: '+inWork.length)}${tile('Средний чек', rub(cnt?rev/cnt:0))}
+    ${tile('Продано, шт.', qty)}${tile('Новых клиентов', newCl, 'всего: '+Object.keys(DB.clients).length)}
+  </div>
+  <div class="sect">Выручка по дням</div>
+  <div class="chart glass"><svg viewBox="0 0 300 140" preserveAspectRatio="none">
+    ${bars.map((b,i)=>{ const h = Math.max(b.v?3:0, b.v/mx*112); return `<rect x="${i*bw+bw*.15}" y="${120-h}" width="${bw*.7}" height="${h}" rx="${Math.min(4,bw*.3)}" fill="url(#bg1)"><title>${fmtDay(b.s)}: ${rub(b.v)}</title></rect>`; }).join('')}
+    <defs><linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa8ff"/><stop offset="1" stop-color="#2672ea"/></linearGradient></defs>
+    <line x1="0" y1="120.5" x2="300" y2="120.5" stroke="currentColor" opacity=".15"/>
+    <text x="0" y="136" font-size="9" fill="currentColor" opacity=".55">${fmtDay(bars[0].s).slice(0,5)}</text><text x="300" y="136" font-size="9" text-anchor="end" fill="currentColor" opacity=".55">${fmtDay(bars.at(-1).s).slice(0,5)}</text>
+    <text x="300" y="10" font-size="9" text-anchor="end" fill="currentColor" opacity=".55">макс ${rub(mx)}</text></svg></div>
+  <div class="sect">Топ товаров</div>
+  <div class="box glass">${topL.length?topL.map(t=>`<div class="bar-row"><span class="n">${esc(t.n)} <small style="color:var(--muted)">×${t.q}</small></span><span class="b"><i style="width:${t.r/tmx*100}%"></i></span><span class="v">${rub(t.r)}</span></div>`).join(''):'<p class="desc">Нет продаж за период</p>'}</div>
+  <div class="sect">По категориям</div>
+  <div class="box glass">${catL.length?catL.map(([k,v])=>`<div class="bar-row"><span class="n">${esc(k)}</span><span class="b"><i style="width:${v/cmx*100}%"></i></span><span class="v">${rub(v)}</span></div>`).join(''):'<p class="desc">Нет данных</p>'}</div>
+  <div class="sect">Деньги и баллы</div>
+  <div class="tiles">
+    ${tile('Наличными', rub(cashS))}${tile('Переводом', rub(cardS))}
+    ${tile('У курьеров на руках', rub(onHands), '<a onclick="A.go(\'staff\')">принять кассу ›</a>')}${tile('Баллы', '+'+given+' / −'+spent, 'начислено / списано')}
+  </div>
+  <div class="sect">Склад <button class="link" onclick="A.go('low')">Все ›</button></div>
+  ${low.length?`<button class="li glass" onclick="A.go('low')"><span class="mic" style="background:rgba(240,60,100,.18);color:var(--bad)">${ic('alert')}</span><div class="m"><b>Заканчиваются: ${low.length} поз.</b><span>${esc(low.slice(0,3).map(x=>x.p.name+(vLabel(x.v)?' ('+vLabel(x.v)+')':'')).join(', '))}</span></div>${ic('chev')}</button>`:'<div class="box glass"><p class="desc">Все остатки в норме</p></div>'}`;
+}
+
+/* ---------- заказы ---------- */
+const AOF = [['new','Новые',o=>o.status===0],['work','В работе',o=>o.status===1||o.status===2],['ship','Доставка/выдача',o=>o.status===3],['done','Выполнены',o=>o.status===4],['cancel','Отменены',o=>o.status===-1],['all','Все',()=>true]];
+function orderLi(o){
+  const cs = staffBy(o.courier);
+  return `<button class="oc glass" onclick="A.aOrder(${o.id})">
+    <div class="oc-h"><span>№${o.id} · ${esc(o.name)}</span><span class="pill ${pillCls(o)}">${stName(o)}</span></div>
+    <div class="oc-m"><span>${fmt(o.ts)} · ${o.method==='delivery'?'🚚 '+esc(o.city):'🏪 самовывоз'}${cs?' · '+esc(cs.name):''}</span><b style="color:var(--text)">${rub(o.total)}</b></div>
+    ${DB.chats[o.id]&&DB.chats[o.id].unread?`<div class="oc-r">💬 Новое сообщение</div>`:''}</button>`;
+}
+function aOrders(){
+  const q = S.aoq.trim().toLowerCase(), f = AOF.find(x=>x[0]===S.aof)||AOF[0];
+  const list = DB.orders.filter(f[2]).filter(o=>!q || String(o.id).includes(q) || (o.phone||'').replace(/\D/g,'').includes(q.replace(/\D/g,'')||'§') || o.name.toLowerCase().includes(q)).sort((a,b)=>b.ts-a.ts);
+  return aTop('Заказы', `${ROLES[role()]} · ${esc(cur().name)}`) +
+  `<div class="srow"><label class="search glass">${ic('search')}<input placeholder="№, имя или телефон" value="${esc(S.aoq)}" oninput="A.aoq(this.value)"></label></div>
+  <div class="chips">${AOF.map(([k,l,fn])=>{ const n = DB.orders.filter(fn).length; return `<button class="chip ${S.aof===k?'on':''}" onclick="A.aof('${k}')">${l}${k!=='all'&&k!=='done'&&k!=='cancel'&&n?` · ${n}`:''}</button>`; }).join('')}</div>
+  <div id="olist">${list.length?list.map(orderLi).join(''):empty('box','Заказов нет','В этой вкладке пусто')}</div>`;
+}
+function aOrderPage({id}){
+  const o = DB.orders.find(x=>x.id===id); if (!o) return head('Заказ');
+  const r = role(), c = DB.clients[o.client] || {}, cs = staffBy(o.courier), mine = o.courier===S.as;
+  const couriers = DB.staff.filter(s=>s.role==='courier');
+  let actions = '';
+  if (r==='courier'){
+    if (o.status===2 && !o.courier) actions = `<button class="btn primary wide" onclick="A.take(${o.id})">Взять заказ</button>`;
+    else if (o.status===2 && mine) actions = `<button class="btn primary wide" onclick="A.st(${o.id},3)">${ic('truck')} Забрал — еду к клиенту</button>`;
+    else if (o.status===3 && mine) actions = `<button class="btn green wide" onclick="A.st(${o.id},4)">${ic('check')} Доставлен${o.pay==='cash'?', деньги получены':''}</button>`;
+  } else if (o.status>=0 && o.status<4){
+    const next = o.status===0 ? 'Подтвердить заказ' : o.status===1 ? 'Начать сборку' : o.status===2 ? (o.method==='delivery'?'Передать курьеру':'Готов к выдаче') : (o.method==='delivery'?'Отметить доставленным':'Выдан клиенту');
+    const block = o.status===2 && o.method==='delivery' && !o.courier;
+    actions = `${o.method==='delivery' && o.status>=1 ? `<div class="form glass" style="margin-bottom:10px"><div class="fl">Курьер</div><select class="inp" onchange="A.setCourier(${o.id},this.value)"><option value="">— не назначен —</option>${couriers.map(s=>`<option value="${s.id}" ${o.courier===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>`:''}
+      <button class="btn ${o.status===3?'green':'primary'} wide" ${block?'disabled':''} onclick="A.st(${o.id},${o.status+1})">${next}</button>
+      ${block?'<p class="hint center" style="margin-top:6px">Сначала назначьте курьера</p>':''}
+      <button class="btn glass wide danger" onclick="A.st(${o.id},-1)">Отменить заказ</button>`;
+  }
+  const addr = o.city+', '+o.address;
+  return head(`Заказ №${o.id}`, fmt(o.ts), `<button class="ibtn glass" onclick="A.achat('${o.id}')">${ic('chat')}</button>`) +
+  `${r==='courier'?`<div class="box glass" style="margin-bottom:12px;border-color:rgba(255,176,32,.5)"><p class="desc" style="color:var(--warn);font-weight:700">18+ · проверьте документ покупателя при передаче</p></div>`:''}
+  ${actions}
+  <div class="sect">Клиент</div>
+  <div class="box glass">
+    <div class="info-row">${ic('user')}<span class="x"><b>${esc(o.name)}</b>${r!=='courier'&&c.id?` · <a onclick="A.aClient('${c.id}')">карточка ›</a>`:''}</span></div>
+    <div class="info-row">${ic('phone')}<span class="x"><a href="tel:${esc((o.phone||'').replace(/[^\d+]/g,''))}">${esc(o.phone)}</a></span></div>
+    ${o.method==='delivery'?`<div class="info-row">${ic('pin')}<span class="x">${esc(addr)}<br><a onclick="A.map(${o.id})">Открыть на карте ›</a></span></div>`:`<div class="info-row">${ic('pin')}<span class="x">Самовывоз</span></div>`}
+    <div class="info-row">${ic('clock')}<span class="x">${esc(o.time)}</span></div>
+    <div class="info-row">${ic('card')}<span class="x">${o.pay==='cash'?'Наличными':'Переводом на карту'} · <b class="${o.paid?'pos':'neg'}">${o.paid?'оплачено':'не оплачено'}</b>${r!=='courier'&&!o.paid&&o.status>=0?` · <a onclick="A.paid(${o.id})">отметить оплату</a>`:''}</span></div>
+    ${o.comment?`<div class="info-row">${ic('edit')}<span class="x">${esc(o.comment)}</span></div>`:''}
+    ${cs?`<div class="info-row">${ic('truck')}<span class="x">Курьер: ${esc(cs.name)}</span></div>`:''}
+  </div>
+  ${timeline(o)}
+  <div class="sect">Товары</div>
+  ${o.items.map(i=>{ const p=P(i.pid)||{id:i.pid,cat:'acc',hue:210,photos:[]}; return `<div class="ci glass"><div class="th sm">${art(p)}</div><div class="info"><div class="pname">${esc(i.name)}</div><div class="vl" style="margin-bottom:4px">${esc(i.label)} · ${i.qty} шт. × ${i.price} руб.</div>
+    ${r==='owner'?`<div class="vl" style="margin:0">закупка ${i.cost||0} · прибыль <b class="pos">${(i.price-(i.cost||0))*i.qty} руб.</b></div>`:''}</div><b>${rub(i.price*i.qty)}</b></div>`; }).join('')}
+  ${orderRows(o, r)}
+  ${r!=='courier'?`<div class="sect">Заметка для сотрудников</div><textarea class="inp glass" placeholder="Видно только сотрудникам" onchange="A.note(${o.id},this.value)">${esc(o.note)}</textarea>`:''}`;
+}
+
+/* ---------- курьер ---------- */
+function aDeliv(){
+  const my = DB.orders.filter(o=>o.courier===S.as && (o.status===2||o.status===3)).sort((a,b)=>a.ts-b.ts);
+  const free = DB.orders.filter(o=>o.method==='delivery' && o.status===2 && !o.courier);
+  const d0 = new Date(); d0.setHours(0,0,0,0);
+  const today = DB.orders.filter(o=>o.courier===S.as && o.status===4 && (o.history.at(-1)||{}).ts>=d0.getTime());
+  const card = o => `<button class="oc glass" onclick="A.aOrder(${o.id})"><div class="oc-h"><span>№${o.id} · ${esc(o.time)}</span><span class="pill ${pillCls(o)}">${stName(o)}</span></div>
+    <div class="oc-m" style="color:var(--text);font-size:14px"><span>📍 ${esc(o.city+', '+o.address)}</span></div>
+    <div class="oc-m"><span>${esc(o.name)} · ${o.pay==='cash'?'💵 наличные':'💳 перевод'}${o.paid?' (оплачено)':''}</span><b style="color:var(--text)">${rub(o.total)}</b></div></button>`;
+  return aTop('Доставки', 'Курьер · '+esc(cur().name)) +
+  `<div class="tiles"><div class="tile glass"><div class="k">Мои активные</div><div class="v">${my.length}</div></div><div class="tile glass"><div class="k">Доставлено сегодня</div><div class="v">${today.length}</div></div></div>
+  <div class="sect">Мои заказы</div>${my.length?my.map(card).join(''):'<div class="box glass"><p class="desc">Нет активных доставок</p></div>'}
+  <div class="sect">Свободные заказы</div>${free.length?free.map(card).join(''):'<div class="box glass"><p class="desc">Свободных заказов нет</p></div>'}`;
+}
+function aCash(){
+  const l = courierCash(S.as), t = sum(l,o=>o.total);
+  return aTop('Касса', 'Курьер · '+esc(cur().name)) +
+  `<div class="bcard glass" style="margin-top:0"><div style="font-weight:700;opacity:.9">Наличные на руках</div><div class="big">${rub(t)}</div><p>Сдайте сумму владельцу — он отметит приём в разделе «Сотрудники»</p></div>
+  <div class="sect">Заказы (${l.length})</div>
+  ${l.length?l.map(o=>`<div class="li glass"><div class="m"><b>№${o.id} · ${esc(o.name)}</b><span>${fmt((o.history.at(-1)||{}).ts||o.ts)} · ${esc(o.city)}</span></div><div class="r">${rub(o.total)}</div></div>`).join(''):'<div class="box glass"><p class="desc">Всё сдано</p></div>'}`;
+}
+
+/* ---------- товары ---------- */
+function aGoods(){
+  const q = S.agq.trim().toLowerCase();
+  const list = DB.products.filter(p=>(S.agc==='all'||p.cat===S.agc) && (!q || (p.name+' '+p.brand).toLowerCase().includes(q))).sort((a,b)=>b.added-a.added);
+  return aTop('Товары', `${DB.products.length} товаров · ${DB.cats.length} категорий`, `<button class="ibtn primary" onclick="A.edit()">${ic('plus')}</button>`) +
+  `<div class="srow"><label class="search glass">${ic('search')}<input placeholder="Название или бренд" value="${esc(S.agq)}" oninput="A.agq(this.value)"></label>${isOwner()?`<button class="fbtn glass" onclick="A.cats()">${ic('grid')}<span>Категории</span></button>`:''}</div>
+  <div class="chips">${[{id:'all',name:'Все'},...DB.cats].map(c=>`<button class="chip ${S.agc===c.id?'on':''}" onclick="A.agc('${c.id}')">${esc(c.name)}</button>`).join('')}</div>
+  <div id="glist">${goodsList(list)}</div>`;
+}
+function goodsList(list){
+  return list.length ? list.map(p=>{ const s = stock(p), low = p.variants.some(v=>(+v.stock||0)<=G.lowStock);
+    return `<button class="li glass" onclick="A.edit(${p.id})"><div class="th sm">${art(p)}</div><div class="m"><b>${esc(p.name)}</b><span>${esc(p.brand)} · ${esc(catName(p.cat))} · вариантов: ${p.variants.length}${p.hidden?' · скрыт':''}</span></div>
+    <div class="r">${minPrice(p)} руб.<small class="${s===0?'neg':low?'':''}" style="${low?'color:var(--warn)':''}">${s} шт.</small></div></button>`; }).join('')
+    : empty('tag','Ничего не найдено','');
+}
+function newVariant(){ return {id:'v'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), flavor:'', fg:'', mg:null, ml:null, color:'', hex:'#888888', price:null, cost:null, stock:0}; }
+function aEdit(){
+  const p = ED, own = isOwner(), cats = DB.cats;
+  const vf = (i, k, lab, type='text', cls='') => `<label class="${cls}">${lab}<input class="inp sm" type="${type}" ${type==='number'?'inputmode="decimal"':''} value="${p.variants[i][k]??''}" oninput="ED.variants[${i}].${k}=${type==='number'?'num(this.value)':'this.value'}"></label>`;
+  return head(p.id ? 'Редактирование' : 'Новый товар', p.id ? 'ID '+p.id : '') +
+  `<div class="sect">Фото</div>
+  <div class="box glass"><div class="photos">${p.photos.map((s,i)=>`<div class="photo"><img src="${s}" alt=""><button onclick="A.delPhoto(${i})">${ic('x')}</button></div>`).join('')}
+    <label class="ph-add">${ic('image')}<input type="file" accept="image/*" multiple hidden onchange="A.addPhotos(this.files)"></label></div>
+    <p class="hint" style="margin-top:8px;padding:0">Первое фото — главное. Фото сжимаются автоматически.</p></div>
+  <div class="sect">Основное</div>
+  <div class="form glass">
+    <div class="fl">Название</div><input class="inp" value="${esc(p.name)}" oninput="ED.name=this.value" placeholder="Например: Lumo 8000">
+    <div class="two"><div><div class="fl" style="margin-bottom:6px">Бренд</div><input class="inp" value="${esc(p.brand)}" oninput="ED.brand=this.value"></div>
+      <div><div class="fl" style="margin-bottom:6px">Категория</div><select class="inp" onchange="ED.cat=this.value">${cats.map(c=>`<option value="${c.id}" ${p.cat===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div></div>
+    <div class="fl">Описание</div><textarea class="inp" oninput="ED.desc=this.value">${esc(p.desc)}</textarea>
+    <div class="two"><div><div class="fl" style="margin-bottom:6px">Цена, руб.</div><input class="inp" type="number" inputmode="decimal" value="${p.price??''}" oninput="ED.price=num(this.value)"></div>
+      <div><div class="fl" style="margin-bottom:6px">Старая цена (скидка)</div><input class="inp" type="number" inputmode="decimal" value="${p.old??''}" placeholder="—" oninput="ED.old=num(this.value)"></div></div>
+  </div>
+  <div class="sect">Метки и видимость</div>
+  <div class="form glass">
+    <div class="sw"><div><b>Хит</b></div>${sw(p.tags.includes('hit'),"A.edTag('hit')")}</div>
+    <div class="sw"><div><b>Новинка</b></div>${sw(p.tags.includes('new'),"A.edTag('new')")}</div>
+    <div class="sw"><div><b>Скидка</b><span>Ставится сама, если указана старая цена</span></div><span class="pill ${p.old?'ok':'mute'}">${p.old?'вкл':'выкл'}</span></div>
+    <div class="sw"><div><b>Скрыть из каталога</b><span>Клиенты не увидят товар</span></div>${sw(p.hidden,'A.edHide()')}</div>
+  </div>
+  <div class="sect">Варианты и остатки <button class="link" onclick="A.addVar()">+ вариант</button></div>
+  ${p.variants.map((v,i)=>`<div class="var-card glass"><div class="irow" style="justify-content:space-between;margin-bottom:8px"><b>Вариант ${i+1}</b>${p.variants.length>1?`<button class="ibtn sm" onclick="A.delVar(${i})">${ic('trash')}</button>`:''}</div>
+    <div class="vgrid">
+      ${vf(i,'flavor','Вкус','text','w2')}
+      <label>Группа вкуса<select class="inp sm" onchange="ED.variants[${i}].fg=this.value"><option value="">—</option>${FG.map(f=>`<option ${v.fg===f?'selected':''}>${f}</option>`).join('')}</select></label>
+      ${vf(i,'mg','Крепость, мг','number')}${vf(i,'ml','Объём, мл','number')}${vf(i,'stock','Остаток, шт','number')}
+      ${vf(i,'color','Цвет','text','w2')}<label>Оттенок<input class="inp sm" type="color" value="${esc(v.hex||'#888888')}" oninput="ED.variants[${i}].hex=this.value" style="padding:4px"></label>
+      ${vf(i,'price','Своя цена','number')}${own?vf(i,'cost','Закупка, руб','number'):''}
+    </div></div>`).join('')}
+  <p class="hint">Пустые поля не показываются клиенту. «Своя цена» — если вариант стоит иначе, чем товар.</p>
+  ${p.id && own ? `<button class="btn glass wide danger" style="margin-top:14px" onclick="A.delProduct()">Удалить товар</button>`:''}
+  <div class="bbar glass"><button class="btn primary" onclick="A.saveProduct()">Сохранить</button></div>`;
+}
+function sheetCats(){
+  return `<div class="grab"></div><div class="sh-head"><h3>Категории</h3><button class="ibtn sm glass" onclick="A.closeSheet()">${ic('x')}</button></div>
+  <div class="form" style="padding:12px 0">${DB.cats.map((c,i)=>{ const n = DB.products.filter(p=>p.cat===c.id).length; return `<div class="irow"><input class="inp" value="${esc(c.name)}" onchange="A.renCat(${i},this.value)"><span class="hint" style="flex:none">${n} тов.</span><button class="ibtn sm glass" ${n?'disabled style="opacity:.3"':''} onclick="A.delCat(${i})">${ic('trash')}</button></div>`; }).join('')}
+  <div class="irow"><input class="inp" id="newcat" placeholder="Новая категория"><button class="ibtn primary" onclick="A.addCat()">${ic('plus')}</button></div></div>
+  <p class="hint">Удалить можно только пустую категорию.</p>`;
+}
+function aLow(){
+  const l = lowList();
+  return head('Заканчиваются', `порог: ${G.lowStock} шт. и меньше`) + (l.length ? l.sort((a,b)=>a.v.stock-b.v.stock).map(({p,v})=>`<button class="li glass" onclick="A.edit(${p.id})"><div class="th sm">${art(p)}</div><div class="m"><b>${esc(p.name)}</b><span>${esc(vLabel(v)||'—')}</span></div><div class="r ${v.stock?'':'neg'}" style="${v.stock?'color:var(--warn)':''}">${v.stock} шт.</div></button>`).join('') : empty('check','Всё в наличии',''));
+}
+
+/* ---------- клиенты ---------- */
+function clientStats(id){ const os = DB.orders.filter(o=>o.client===id), done = os.filter(o=>o.status===4); return {n:os.length, spent:sum(done,o=>o.total), last:Math.max(0,...os.map(o=>o.ts))}; }
+function aClients(){
+  const q = S.acq.trim().toLowerCase();
+  const list = Object.values(DB.clients).filter(c=>!q || (c.name||'').toLowerCase().includes(q) || (c.phone||'').replace(/\D/g,'').includes(q.replace(/\D/g,'')||'§')).map(c=>({c, s:clientStats(c.id)})).sort((a,b)=>b.s.spent-a.s.spent);
+  return aTop('Клиенты', `${Object.keys(DB.clients).length} клиентов`) +
+  `<div class="srow"><label class="search glass">${ic('search')}<input placeholder="Имя или телефон" value="${esc(S.acq)}" oninput="A.acq(this.value)"></label></div>
+  <div id="clist">${list.map(({c,s})=>`<button class="li glass" onclick="A.aClient('${c.id}')"><div class="ava sm">${esc((c.name||'?')[0])}</div><div class="m"><b>${esc(c.name||'Без имени')}${c.blocked?' 🚫':''}</b><span>${esc(c.phone||'нет телефона')} · заказов: ${s.n} · баллы: ${c.bonus}</span></div><div class="r">${rub(s.spent)}</div></button>`).join('')}</div>`;
+}
+function aClientPage({id}){
+  const c = DB.clients[id]; if (!c) return head('Клиент');
+  const s = clientStats(id), os = DB.orders.filter(o=>o.client===id).sort((a,b)=>b.ts-a.ts), inv = invitedBy(id), ref = DB.clients[c.refBy];
+  return head(esc(c.name||'Клиент'), 'с '+fmtDay(c.joined)) +
+  `<div class="tiles"><div class="tile glass"><div class="k">Потратил</div><div class="v">${rub(s.spent)}</div></div><div class="tile glass"><div class="k">Заказов</div><div class="v">${s.n}</div></div>
+   <div class="tile glass"><div class="k">Баллы</div><div class="v">${c.bonus}</div></div><div class="tile glass"><div class="k">Пригласил</div><div class="v">${inv.length}</div></div></div>
+  <div class="box glass" style="margin-top:12px">
+    <div class="info-row">${ic('phone')}<span class="x">${c.phone?`<a href="tel:${esc(c.phone.replace(/[^\d+]/g,''))}">${esc(c.phone)}</a>`:'—'}</span></div>
+    <div class="info-row">${ic('pin')}<span class="x">${esc([c.city,c.address].filter(Boolean).join(', ')||'—')}</span></div>
+    <div class="info-row">${ic('users')}<span class="x">${ref?`Пришёл по приглашению: <a onclick="A.aClient('${ref.id}')">${esc(ref.name)}</a> · ${c.refRewarded?'награда выдана':'ждём первый заказ'}`:'Пришёл сам'}</span></div>
+    <div class="info-row">${ic('user')}<span class="x">Telegram ID: ${esc(c.id)}</span></div>
+  </div>
+  ${isOwner()?`<div class="sect">Начислить / списать баллы</div><div class="form glass"><div class="two"><input class="inp" id="pts" type="number" inputmode="numeric" placeholder="+20 или -20"><input class="inp" id="ptsr" placeholder="Причина"></div><button class="btn primary sm" onclick="A.adjPts('${c.id}')">Применить</button></div>
+  <div class="form glass" style="margin-top:10px"><div class="sw"><div><b>Заблокировать</b><span>Не сможет оформлять заказы</span></div>${sw(c.blocked,`A.block('${c.id}')`)}</div></div>`:''}
+  <div class="sect">Заказы</div>${os.length?os.map(orderLi).join(''):'<div class="box glass"><p class="desc">Заказов нет</p></div>'}
+  ${inv.length?`<div class="sect">Приглашённые</div>${inv.map(x=>`<button class="li glass" onclick="A.aClient('${x.id}')"><div class="ava sm">${esc(x.name[0])}</div><div class="m"><b>${esc(x.name)}</b><span>с ${fmtDay(x.joined)}</span></div><span class="pill ${x.refRewarded?'ok':'mute'}">${x.refRewarded?'купил':'ждём'}</span></button>`).join('')}`:''}
+  <div class="sect">История баллов</div><div class="box glass">${c.ledger.slice(0,30).map(l=>`<div class="logrow" style="display:flex;justify-content:space-between;gap:10px"><div>${esc(l.r)}<small>${fmt(l.ts)}</small></div><b class="${l.n>0?'pos':'neg'}">${l.n>0?'+':''}${l.n}</b></div>`).join('')||'<p class="desc">Пусто</p>'}</div>`;
+}
+
+/* ---------- ещё ---------- */
+function aMore(){
+  const r = role(), u = unreadChats();
+  const mi = (i, l, act, rr='') => `<button class="mi" onclick="${act}"><span class="mic">${ic(i)}</span>${l}<span class="mi-r">${rr}${ic('chev')}</span></button>`;
+  const owner = r==='owner';
+  return aTop('Ещё', `${ROLES[r]} · ${esc(cur().name)}`) +
+  (owner ? `<div class="menu glass" style="margin-top:0">
+    ${mi('chat','Чаты с клиентами',"A.go('achats')",u?`<i class="nb">${u}</i>`:'')}
+    ${mi('tag','Промокоды',"A.go('promos')",DB.promos.filter(p=>p.active).length)}
+    ${mi('mega','Рассылка',"A.go('bcast')")}
+    ${mi('download','Экспорт в Excel',"A.export()")}
+  </div>
+  <div class="menu glass">
+    ${mi('coins','Кэшбэк и баллы',"A.go('loyal')",G.cashback+'%')}
+    ${mi('users','Реферальная система',"A.go('refset')",G.refOn?'вкл':'выкл')}
+    ${mi('cog','Настройки магазина',"A.go('settings')")}
+    ${mi('shield','Сотрудники и роли',"A.go('staff')",DB.staff.length)}
+    ${mi('alert','Заканчиваются',"A.go('low')",lowList().length)}
+    ${mi('list','Журнал действий',"A.go('log')")}
+  </div>` : r==='seller' ? `<div class="menu glass" style="margin-top:0">${mi('alert','Заканчиваются',"A.go('low')",lowList().length)}</div>` : '')
+  + `<div class="menu glass">${mi('exit','Перейти в магазин',"A.shop()")}</div>
+  <div class="sect">Тема</div>
+  <div class="seg glass"><button class="${S.theme==='dark'?'on':''}" onclick="A.setTheme('dark')">${ic('moon')} Тёмная</button><button class="${S.theme==='light'?'on':''}" onclick="A.setTheme('light')">${ic('sun')} Светлая</button></div>`;
+}
+function aChats(){
+  const l = Object.entries(DB.chats).filter(([k,c])=>c.msgs.length).sort((a,b)=>(b[1].msgs.at(-1).ts)-(a[1].msgs.at(-1).ts));
+  return head('Чаты', 'Отвечает владелец') + (l.length ? l.map(([k,c])=>{ const cl = DB.clients[c.client]||{}, m = c.msgs.at(-1);
+    return `<button class="li glass" onclick="A.achat('${k}')"><div class="ava sm">${esc((cl.name||'?')[0])}</div><div class="m"><b>${esc(cl.name||'Клиент')} · ${c.order?'заказ №'+c.order:'поддержка'}</b><span>${esc(m.t)}</span></div><div class="r"><small>${hhmm(m.ts)}</small>${c.unread?`<i class="nb">${c.unread}</i>`:''}</div></button>`; }).join('') : empty('chat','Сообщений нет',''));
+}
+function aChatPage({key}){
+  const c = DB.chats[key] || {}, cl = DB.clients[c.client]||{};
+  return head(esc(cl.name||'Клиент'), c.order?`Заказ №${c.order}`:'Поддержка', c.order?`<button class="ibtn glass" onclick="A.aOrder(${c.order})">${ic('box')}</button>`:'<div class="ph"></div>') + chatHtml(key, true);
+}
+function aPromos(){
+  return head('Промокоды', '', `<button class="ibtn primary" onclick="A.promoEdit()">${ic('plus')}</button>`) +
+  (DB.promos.length ? DB.promos.map((p,i)=>`<div class="li glass"><div class="m"><b>${esc(p.code)} · ${p.t==='pct'?'−'+p.v+'%':'−'+p.v+' руб.'}</b><span>${p.min?'от '+p.min+' руб. · ':''}использовано ${p.used}${p.limit?' из '+p.limit:''}</span></div>${sw(p.active,`A.promoTog(${i})`)}<button class="ibtn sm" onclick="A.promoDel(${i})">${ic('trash')}</button></div>`).join('') : empty('tag','Промокодов нет',''));
+}
+function sheetPromo(){
+  return `<div class="grab"></div><div class="sh-head"><h3>Новый промокод</h3><button class="ibtn sm glass" onclick="A.closeSheet()">${ic('x')}</button></div>
+  <div class="form" style="padding:12px 0">
+    <div class="fl">Код</div><input class="inp" style="text-transform:uppercase" value="${esc(PE.code)}" oninput="PE.code=this.value.toUpperCase().replace(/\\s/g,'')" placeholder="SUMMER15">
+    <div class="seg glass"><button class="${PE.t==='pct'?'on':''}" onclick="PE.t='pct';A.rSheet()">Процент</button><button class="${PE.t==='fix'?'on':''}" onclick="PE.t='fix';A.rSheet()">Сумма, руб.</button></div>
+    <div class="two"><div><div class="fl" style="margin-bottom:6px">${PE.t==='pct'?'Скидка, %':'Скидка, руб.'}</div><input class="inp" type="number" inputmode="numeric" value="${PE.v??''}" oninput="PE.v=num(this.value)"></div>
+    <div><div class="fl" style="margin-bottom:6px">Мин. сумма</div><input class="inp" type="number" inputmode="numeric" value="${PE.min??''}" placeholder="0" oninput="PE.min=num(this.value)"></div></div>
+    <div class="fl">Лимит использований (0 — без лимита)</div><input class="inp" type="number" inputmode="numeric" value="${PE.limit??''}" placeholder="0" oninput="PE.limit=num(this.value)">
+  </div>
+  <button class="btn primary wide" onclick="A.promoSave()">Создать</button>`;
+}
+const AUD = [['all','Все клиенты',()=>true],['buyers','Покупали',c=>clientStats(c.id).n>0],['new','Ни разу не покупали',c=>clientStats(c.id).n===0],['sleep','Не покупали 30 дней',c=>{ const s = clientStats(c.id); return s.n>0 && s.last < Date.now()-30*DAY; }]];
+function aBcast(){
+  const a = AUD.find(x=>x[0]===BC.aud), n = Object.values(DB.clients).filter(c=>!c.blocked).filter(a[2]).length;
+  return head('Рассылка', 'через бота') + `<div class="form glass">
+    <div class="fl">Кому</div><div class="opts">${AUD.map(([k,l])=>`<button class="opt ${BC.aud===k?'on':''}" onclick="BC.aud='${k}';A.r()">${l}</button>`).join('')}</div>
+    <div class="fl">Текст сообщения</div><textarea class="inp" style="height:130px" placeholder="Новинки уже в каталоге! Скидка 10% по промокоду…" oninput="BC.t=this.value">${esc(BC.t)}</textarea>
+    <div class="hint">Получателей: ${n}. Под сообщением бот добавит кнопку «Открыть магазин».</div>
+  </div>
+  <div class="sect">История</div>${DB.broadcasts.length?DB.broadcasts.map(b=>`<div class="li glass"><div class="m"><b>${esc(b.t)}</b><span>${fmt(b.ts)} · ${esc(b.aud)} · ${b.n} получ.</span></div></div>`).join(''):'<div class="box glass"><p class="desc">Рассылок ещё не было</p></div>'}
+  <div class="bbar glass"><button class="btn primary" onclick="A.bcSend()">${ic('send')} Отправить ${n}</button></div>`;
+}
+function aStaff(){
+  const own = S.as;
+  return head('Сотрудники', 'роли и доступы') +
+  `<div class="box glass"><p class="desc"><b style="color:var(--text)">Владелец</b> — всё. <b style="color:var(--text)">Продавец</b> — заказы, товары и остатки (без закупочных цен и удаления), клиенты. <b style="color:var(--text)">Курьер</b> — только свои доставки: адрес, телефон, карта, касса.</p></div>
+  <div class="sect">Команда</div>
+  ${DB.staff.map((s,i)=>{ const cash = s.role==='courier' ? sum(courierCash(s.id),o=>o.total) : 0;
+    return `<div class="li glass" style="flex-wrap:wrap"><div class="ava sm">${esc(s.name[0])}</div><div class="m"><b>${esc(s.name)}${s.id===ME?' (вы)':''}</b><span>ID ${esc(s.id)}${s.role==='courier'?` · на руках ${rub(cash)}`:''}</span></div>
+    ${s.id===ME?`<span class="pill">${ROLES[s.role]}</span>`:`<select class="inp sm" style="width:120px;flex:none" onchange="A.staffRole(${i},this.value)">${Object.entries(ROLES).map(([k,l])=>`<option value="${k}" ${s.role===k?'selected':''}>${l}</option>`).join('')}</select><button class="ibtn sm" onclick="A.staffDel(${i})">${ic('trash')}</button>`}
+    ${cash?`<button class="btn green sm wide" style="margin-top:8px" onclick="A.handover('${s.id}')">Принять кассу ${rub(cash)}</button>`:''}</div>`; }).join('')}
+  <div class="sect">Добавить сотрудника</div>
+  <div class="form glass"><input class="inp" id="sf-id" placeholder="Telegram ID (цифры)" inputmode="numeric"><input class="inp" id="sf-name" placeholder="Имя">
+    <select class="inp" id="sf-role"><option value="seller">Продавец</option><option value="courier">Курьер</option><option value="owner">Владелец</option></select>
+    <button class="btn primary sm" onclick="A.staffAdd()">Добавить</button>
+    <div class="hint">Свой Telegram ID сотрудник узнает командой /id в боте (сделаем на этапе 3).</div></div>`;
+}
+function fIn(label, key, type='text', hint=''){ return `<div class="fl">${label}</div><input class="inp" type="${type}" ${type==='number'?'inputmode="decimal"':''} value="${esc(SE[key])}" oninput="SE.${key}=${type==='number'?'num(this.value)':'this.value'}">${hint?`<div class="hint">${hint}</div>`:''}`; }
+function aSettings(){
+  return head('Настройки магазина') + `<div class="sect">Магазин</div><div class="form glass">
+    ${fIn('Название','name')}${fIn('Часы работы','hours')}${fIn('Телефон магазина','phone','tel')}
+    <div class="sw"><div><b>Самовывоз</b><span>Если выключен — только доставка</span></div>${sw(SE.pickupOn,'SE.pickupOn=!SE.pickupOn;A.r()')}</div>
+    ${SE.pickupOn?fIn('Адрес самовывоза','pickup'):''}
+    <div class="fl">Реквизиты для перевода</div><textarea class="inp" oninput="SE.card=this.value">${esc(SE.card)}</textarea>
+    ${fIn('Username бота (без @)','bot')}
+    ${fIn('Ссылка на приложение (GitHub Pages)','appUrl','url','Например: https://имя.github.io/cloud-vape/')}
+    <button class="btn glass sm" onclick="A.setupBot()">${ic('send')} Подключить бота</button>
+    <div class="hint">Сначала сохраните ссылку, потом нажмите «Подключить бота» — бот начнёт присылать уведомления, а кнопка «Магазин» появится в чате.</div></div>
+  <div class="sect">Доставка</div><div class="form glass">
+    <div class="fl">Бесплатная доставка в городе</div><select class="inp" onchange="SE.freeCity=this.value">${SE.cities.map(c=>`<option ${c===SE.freeCity?'selected':''}>${esc(c)}</option>`).join('')}</select>
+    ${fIn('Доставка в другие города, руб.','deliveryOther','number')}${fIn('Минимальная сумма заказа, руб.','minOrder','number','0 — без минимума')}
+    <div class="fl">Города доставки (через запятую)</div><textarea class="inp" oninput="SE.cities=this.value.split(',').map(s=>s.trim()).filter(Boolean)">${esc(SE.cities.join(', '))}</textarea>
+    <div class="fl">Интервалы доставки (через запятую)</div><textarea class="inp" oninput="SE.slots=this.value.split(',').map(s=>s.trim()).filter(Boolean)">${esc(SE.slots.join(', '))}</textarea></div>
+  <div class="sect">Склад</div><div class="form glass">${fIn('Предупреждать, когда остаток ≤','lowStock','number')}</div>
+  <div class="bbar glass"><button class="btn primary" onclick="A.saveSet('Настройки магазина')">Сохранить</button></div>`;
+}
+function aLoyal(){
+  const ex = 1000, cb = Math.floor(ex*(SE.cashback||0)/100), mb = Math.floor(ex*(SE.maxBonus||0)/100);
+  return head('Кэшбэк и баллы') + `<div class="form glass">
+    ${fIn('Кэшбэк, % от суммы заказа','cashback','number','Начисляется после статуса «Выполнен» с суммы, оплаченной деньгами')}
+    ${fIn('Баллами можно оплатить до, %','maxBonus','number')}
+    ${fIn('Приветственные баллы новому клиенту','welcome','number')}
+    ${fIn('Баллы за отзыв','reviewBonus','number','0 — не начислять')}
+  </div>
+  <div class="box glass" style="margin-top:12px"><p class="desc">Пример: заказ на ${rub(ex)} → клиент получит <b class="pos">+${cb}</b> баллов и сможет оплатить баллами до <b style="color:var(--text)">${rub(mb)}</b>. 1 балл = 1 руб.</p></div>
+  <p class="hint" style="margin-top:8px">Изменения действуют для новых заказов. Чтобы обновить пример, нажмите «Сохранить».</p>
+  <div class="bbar glass"><button class="btn primary" onclick="A.saveSet('Кэшбэк и баллы')">Сохранить</button></div>`;
+}
+function aRefSet(){
+  const cl = Object.values(DB.clients), inv = cl.filter(c=>c.refBy), conv = inv.filter(c=>c.refRewarded);
+  const paid = sum(cl.flatMap(c=>c.ledger.filter(l=>/^Друг |^Бонус за приглашение/.test(l.r))), l=>l.n);
+  const tops = cl.map(c=>({c, n:invitedBy(c.id).length, k:invitedBy(c.id).filter(x=>x.refRewarded).length})).filter(x=>x.n).sort((a,b)=>b.k-a.k||b.n-a.n).slice(0,10);
+  const refRev = sum(DB.orders.filter(o=>o.status===4 && DB.clients[o.client] && DB.clients[o.client].refBy), o=>o.total);
+  return head('Реферальная система') + `<div class="form glass"><div class="sw"><div><b>Программа включена</b><span>Ссылка «Приведи друга» в профиле клиентов</span></div>${sw(SE.refOn,'SE.refOn=!SE.refOn;A.r()')}</div></div>
+  <div class="form glass" style="margin-top:10px">
+    ${fIn('Друг получает баллов (сразу, на первый заказ)','refFriend','number')}
+    ${fIn('Пригласивший получает баллов','refInviter','number','Начисляется, когда друг получит первый заказ')}
+    ${fIn('Мин. сумма первого заказа друга, руб.','refMin','number','0 — любая сумма')}
+  </div>
+  <div class="sect">Статистика</div>
+  <div class="tiles"><div class="tile glass"><div class="k">Пришло по ссылкам</div><div class="v">${inv.length}</div></div><div class="tile glass"><div class="k">Сделали заказ</div><div class="v">${conv.length}</div><div class="s">${inv.length?Math.round(conv.length/inv.length*100):0}% конверсия</div></div>
+    <div class="tile glass"><div class="k">Выдано баллов</div><div class="v">${paid}</div></div><div class="tile glass"><div class="k">Выручка с приглашённых</div><div class="v">${rub(refRev)}</div></div></div>
+  <div class="sect">Лучшие приглашающие</div>
+  ${tops.length?tops.map(t=>`<button class="li glass" onclick="A.aClient('${t.c.id}')"><div class="ava sm">${esc(t.c.name[0])}</div><div class="m"><b>${esc(t.c.name)}</b><span>пригласил ${t.n} · купили ${t.k}</span></div><div class="r">+${t.k*G.refInviter}</div></button>`).join(''):'<div class="box glass"><p class="desc">Пока никого</p></div>'}
+  <div class="bbar glass"><button class="btn primary" onclick="A.saveSet('Реферальная система')">Сохранить</button></div>`;
+}
+function aLog(){ return head('Журнал действий') + `<div class="box glass">${DB.log.slice(0,200).map(l=>`<div class="logrow">${esc(l.text)}<small>${fmt(l.ts)} · ${esc(l.who)}</small></div>`).join('')||'<p class="desc">Пусто</p>'}</div>`; }
+
+/* ---------- Excel ---------- */
+function exportSheets(){
+  const done = DB.orders.slice().sort((a,b)=>a.ts-b.ts);
+  const orders = [['№','Дата','Статус','Клиент','Телефон','Получение','Город','Адрес','Оплата','Оплачено','Курьер','Товары, руб','Промокод','Скидка, руб','Баллами, руб','Доставка, руб','Итого, руб','Закупка, руб','Прибыль, руб','Кэшбэк, баллы']];
+  done.forEach(o=>orders.push([o.id, fmtDay(o.ts)+' '+hhmm(o.ts), stName(o), o.name, o.phone, o.method==='delivery'?'Доставка':'Самовывоз', o.city, o.address, o.pay==='cash'?'Наличные':'Перевод', o.paid?'да':'нет', (staffBy(o.courier)||{}).name||'',
+    o.sub, o.promo||'', o.disc, o.bonus, o.del, o.total, o.status===-1?0:oCost(o), o.status===-1?0:oProfit(o), o.cashback]));
+  const lines = [['№ заказа','Дата','Статус','Товар','Вариант','Кол-во','Цена','Сумма','Закупка за шт.','Закупка всего','Прибыль']];
+  done.forEach(o=>o.items.forEach(i=>lines.push([o.id, fmtDay(o.ts), stName(o), i.name, i.label, i.qty, i.price, {f:'F{r}*G{r}'}, i.cost||0, {f:'F{r}*I{r}'}, {f:'H{r}-J{r}'}])));
+  const stockS = [['Товар','Категория','Бренд','Вариант','Остаток, шт','Закупка, руб','Цена, руб','Сумма по закупке','Сумма по цене','Наценка, %','Скрыт']];
+  DB.products.forEach(p=>p.variants.forEach(v=>stockS.push([p.name, catName(p.cat), p.brand, vLabel(v)||'—', +v.stock||0, v.cost||0, vPrice(p,v), {f:'E{r}*F{r}'}, {f:'E{r}*G{r}'}, {f:'IF(F{r}>0,ROUND((G{r}-F{r})/F{r}*100,1),0)'}, p.hidden?'да':''])));
+  const clientsS = [['Клиент','Telegram ID','Телефон','Город','Заказов','Потратил, руб','Баллы','Пригласил','Пришёл от','Дата регистрации']];
+  Object.values(DB.clients).forEach(c=>{ const s = clientStats(c.id); clientsS.push([c.name, c.id, c.phone, c.city, s.n, s.spent, c.bonus, invitedBy(c.id).length, (DB.clients[c.refBy]||{}).name||'', fmtDay(c.joined)]); });
+  const N = orders.length;
+  const summary = [['Показатель','Значение'],
+    ['Выручка (выполненные), руб', {f:`SUMIFS('Заказы'!Q2:Q${N},'Заказы'!C2:C${N},"Выполнен")`}],
+    ['Прибыль (выполненные), руб', {f:`SUMIFS('Заказы'!S2:S${N},'Заказы'!C2:C${N},"Выполнен")`}],
+    ['Закупка (выполненные), руб', {f:`SUMIFS('Заказы'!R2:R${N},'Заказы'!C2:C${N},"Выполнен")`}],
+    ['Выполнено заказов', {f:`COUNTIF('Заказы'!C2:C${N},"Выполнен")`}],
+    ['Отменено заказов', {f:`COUNTIF('Заказы'!C2:C${N},"Отменён")`}],
+    ['Средний чек, руб', {f:'IFERROR(B2/B5,0)'}],
+    ['Скидки по промокодам, руб', {f:`SUMIFS('Заказы'!N2:N${N},'Заказы'!C2:C${N},"Выполнен")`}],
+    ['Оплачено баллами, руб', {f:`SUMIFS('Заказы'!O2:O${N},'Заказы'!C2:C${N},"Выполнен")`}],
+    ['Склад по закупке, руб', {f:`SUM('Остатки'!H2:H${stockS.length})`}],
+    ['Склад по цене продажи, руб', {f:`SUM('Остатки'!I2:I${stockS.length})`}],
+    ['Клиентов', clientsS.length-1],
+    ['Отчёт сформирован', fmtDay(Date.now())+' '+hhmm(Date.now())]];
+  return [['Сводка',summary],['Заказы',orders],['Позиции',lines],['Остатки',stockS],['Клиенты',clientsS]];
+}
+function loadXLSX(){ return window.XLSX ? Promise.resolve() : new Promise((ok,no)=>{ const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = ok; s.onerror = no; document.head.appendChild(s); }); }
+async function doExport(){
+  toast('Готовлю Excel…');
+  try{ await loadXLSX(); }catch(e){ return toast('Не удалось загрузить модуль Excel — проверьте интернет'); }
+  const wb = XLSX.utils.book_new();
+  exportSheets().forEach(([name, rows])=>{
+    const ws = XLSX.utils.aoa_to_sheet(rows.map((r,ri)=>r.map(c=>c&&c.f?null:c)));
+    rows.forEach((r,ri)=>r.forEach((c,ci)=>{ if (c && c.f){ ws[XLSX.utils.encode_cell({r:ri,c:ci})] = {t:'n', f:c.f.replace(/\{r\}/g, ri+1)}; } }));
+    ws['!cols'] = rows[0].map((h,i)=>({wch:Math.max(10, Math.min(36, Math.max(...rows.slice(0,50).map(r=>String(r[i]&&r[i].f?'000000':r[i]??'').length), String(h).length)+2))}));
+    XLSX.utils.book_append_sheet(wb, ws, name);
+  });
+  const fname = `CloudVape_отчёт_${fmtDay(Date.now())}.xlsx`;
+  if (LIVE){ try{ await act('sendFile', {name:fname, b64:XLSX.write(wb, {type:'base64', bookType:'xlsx'})}, {noRender:true}); toast('📊 Бот отправил отчёт в чат'); }catch(e){} return; }
+  XLSX.writeFile(wb, fname);
+  log('Выгружен отчёт Excel'); save();
+  toast('Файл сохранён');
+}
+
+/* =====================================================================
+   РЕНДЕР
+   ===================================================================== */
+let tab = 'catalog', stack = [];
+const TABS = {catalog:vCatalog, fav:vFav, cart:vCart, profile:vProfile};
+const AVIEWS = {dash:aDash, orders:aOrders, goods:aGoods, clients:aClients, more:aMore, deliv:aDeliv, cash:aCash};
+const PAGES = {product:pProduct, checkout:pCheckout, success:pSuccess, orders:pOrders, order:pOrder, chat:pChat, mydata:pMyData, about:pAbout, points:pPoints, ref:pRef,
+  aorder:aOrderPage, edit:aEdit, low:aLow, aclient:aClientPage, achats:aChats, achat:aChatPage, promos:aPromos, bcast:aBcast, staff:aStaff, settings:aSettings, loyal:aLoyal, refset:aRefSet, log:aLog};
+function render(){
+  if (!DB){ $('#page').style.display='none'; $('#main').style.display='block'; $('#tabs').style.display='none'; $('#main').innerHTML = loadHtml(); return; }
+  const admin = S.mode==='admin' && cur();
+  if (S.mode==='admin' && !admin) S.mode = 'shop';
+  document.body.classList.toggle('light', S.theme==='light');
+  document.body.classList.toggle('admin', !!admin);
+  const top = stack[stack.length-1];
+  if (top){ $('#main').style.display='none'; $('#page').style.display='block'; $('#page').innerHTML = PAGES[top.name](top.params||{}); $('#tabs').style.display='none'; }
+  else {
+    $('#page').style.display='none'; $('#main').style.display='block'; $('#tabs').style.display='flex';
+    if (admin){ const tabs = ATABS[role()]; if (!tabs.some(t=>t[0]===S.atab)) S.atab = tabs[0][0]; $('#main').innerHTML = AVIEWS[S.atab]();
+      const nNew = DB.orders.filter(o=>o.status===0).length, u = unreadChats();
+      $('#tabs').innerHTML = tabs.map(([k,i,l])=>{ const b = k==='orders'&&nNew ? nNew : k==='more'&&u&&isOwner() ? u : k==='deliv' ? DB.orders.filter(o=>o.courier===S.as&&(o.status===2||o.status===3)).length : 0;
+        return `<button class="tab ${S.atab===k?'on':''}" onclick="A.atab('${k}')">${ic(i)}<span>${l}</span>${b?`<i class="badge">${b}</i>`:''}</button>`; }).join('');
+    } else { $('#main').innerHTML = TABS[tab](); const n = cartCount();
+      $('#tabs').innerHTML = [['catalog','grid','Каталог'],['fav','heart','Избранное'],['cart','bag','Корзина'],['profile','user','Профиль']]
+        .map(([k,i,l])=>`<button class="tab ${tab===k?'on':''}" onclick="A.tab('${k}')">${ic(i)}<span>${l}</span>${k==='cart'&&n?`<i class="badge">${n}</i>`:''}</button>`).join(''); }
+  }
+  $('#age').className = S.age ? '' : 'show';
+  $('#age').innerHTML = S.age ? '' : `<div class="age-in glass"><div class="age-badge">18+</div><div class="brandline" style="justify-content:center">${logo()}${esc(G.name)}</div><h2>Вам уже есть 18 лет?</h2>
+    <p>Магазин продаёт никотинсодержащую продукцию. Доступ разрешён только совершеннолетним. При получении заказа потребуется документ.</p>
+    <button class="btn primary wide" onclick="A.age(true)">Да, мне есть 18</button><button class="btn glass wide" onclick="A.age(false)">Нет</button></div>`;
+  try{ if (tg){ top ? tg.BackButton.show() : tg.BackButton.hide(); const c = S.theme==='dark'?'#030817':'#eef4ff'; tg.setHeaderColor(c); tg.setBackgroundColor(c); } }catch(e){}
+}
+function go(name, params){ stack.push({name, params}); render(); window.scrollTo(0,0); }
+function openSheet(fn){ SH = fn; $('#sheet').innerHTML = fn(); $('#sheet-wrap').classList.add('open'); }
+let SH = null;
+function addToCart(pid, vid, qty){
+  const p = P(pid), v = V(p,vid), ex = S.cart.find(i=>i.vid===vid), have = ex ? ex.qty : 0;
+  if (have + qty > v.stock){ toast('Больше нет в наличии'); return false; }
+  ex ? ex.qty += qty : S.cart.push({pid, vid, qty}); save(); haptic('medium'); toast('Добавлено в корзину'); return true;
+}
+function readImg(file){ return new Promise(res=>{ const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const m = 900, k = Math.min(1, m/Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width*k); c.height = Math.round(im.height*k); c.getContext('2d').drawImage(im,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',.8)); }; im.onerror = () => res(null); im.src = r.result; }; r.readAsDataURL(file); }); }
+const scrollEnd = () => setTimeout(()=>window.scrollTo(0, document.body.scrollHeight), 30);
+
+/* =====================================================================
+   СВЯЗЬ С СЕРВЕРОМ (в Telegram) / ДЕМО (в обычном браузере)
+   ===================================================================== */
+let BUSY = 0, lastSync = 0, LOAD_ERR = '';
+function busy(on){ BUSY = Math.max(0, BUSY + (on ? 1 : -1)); $('#busy').style.display = BUSY ? 'block' : 'none'; }
+function applyState(st){ DB = st; G = DB.settings; S.as = ME; lastSync = Date.now(); S.cart = S.cart.filter(i=>V(P(i.pid),i.vid)); save(); }
+async function act(name, data={}, opt={}){
+  if (!LIVE){
+    try{ const r = LOCAL[name](data); save(); if (!opt.noRender) render(); return r; }
+    catch(e){ if (!opt.quiet) toast(esc(e.message)); throw e; }
+  }
+  if (!opt.silent) busy(true);
+  try{
+    const resp = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json', apikey:SUPA_KEY}, body:JSON.stringify({initData:tg.initData, action:name, data})});
+    const j = await resp.json().catch(()=>({ok:false, error:'Сервер недоступен'}));
+    if (!j.ok) throw new Error(j.error || 'Ошибка');
+    applyState(j.state); if (!opt.noRender) render();
+    return j.res;
+  }catch(e){ if (!opt.quiet) toast(esc(/fetch|network|load failed/i.test(e.message) ? 'Нет связи с сервером' : e.message)); throw e; }
+  finally{ if (!opt.silent) busy(false); }
+}
+const run = (n, d, o) => act(n, d, o).catch(()=>undefined);
+const fail = m => { throw new Error(m); };
+const ord = id => DB.orders.find(x=>x.id===+id) || fail('Заказ не найден');
+
+/* ---------- демо-реализация тех же действий (без сервера) ---------- */
+const LOCAL = {
+  boot(){ return null; },
+  writeOk(){ return null; },
+  profile(d){ Object.assign(me(), {name:d.name, phone:d.phone, city:d.city, address:d.address}); },
+  refCode(d){ applyRef(String(d.code||'').replace(/^ref_/,''), false); },
+  promo(d){ const p = DB.promos.find(x=>x.code===d.code); if (!p || !p.active || (p.limit && p.used>=p.limit)) fail('Промокод не найден или закончился'); return {...p}; },
+  place(d){
+    if (me().blocked) fail('Оформление недоступно, свяжитесь с поддержкой');
+    const items = d.items.map(i=>{ const p = DB.products.find(x=>x.variants.some(v=>v.id===i.vid)), v = p && V(p,i.vid);
+      if (!v || p.hidden) fail('Товар больше недоступен — обновите корзину');
+      if (v.stock < i.qty) fail('Закончился товар: '+p.name+'. Обновите корзину');
+      return {pid:p.id, vid:v.id, name:p.name, label:vLabel(v)||p.brand, price:vPrice(p,v), cost:v.cost||0, qty:i.qty}; });
+    const sub = items.reduce((a,i)=>a+i.price*i.qty,0);
+    if (G.minOrder && sub < G.minOrder) fail(`Минимальная сумма заказа — ${rub(G.minOrder)}`);
+    const pr = d.promo && DB.promos.find(x=>x.code===d.promo && x.active && (!x.limit || x.used<x.limit) && sub >= (x.min||0));
+    const disc = pr ? (pr.t==='pct' ? Math.round(sub*pr.v/100) : Math.min(pr.v,sub)) : 0, base = sub - disc;
+    const bonus = d.useBonus ? Math.max(0, Math.min(me().bonus, Math.floor(base*G.maxBonus/100))) : 0, pay = base - bonus;
+    const method = G.pickupOn && d.method==='pickup' ? 'pickup' : 'delivery';
+    const city = method==='delivery' ? d.city : G.freeCity, del = method==='delivery' && city!==G.freeCity ? +G.deliveryOther : 0;
+    const id = ++DB.seq;
+    items.forEach(i=>{ V(P(i.pid), i.vid).stock -= i.qty; });
+    DB.orders.push({id, ts:Date.now(), client:ME, name:d.name, phone:d.phone, items, sub, disc, promo:pr?pr.code:null, bonus, del, total:pay+del, cashback:Math.floor(pay*G.cashback/100),
+      method, city, address:method==='delivery'?d.address:'', time:d.time, pay:d.pay, comment:d.comment, status:0, history:[{s:0,ts:Date.now(),by:'Клиент'}], courier:null, paid:false, handed:true, note:''});
+    if (bonus) addPoints(ME, -bonus, `Оплата заказа №${id}`);
+    if (pr) pr.used++;
+    Object.assign(me(), {name:d.name, phone:d.phone, city, address:d.address || me().address});
+    DB.chats[id] = {client:ME, order:id, unread:0, msgs:[{from:'op', t:`Здравствуйте! Заказ №${id} получен, скоро подтвердим.`, ts:Date.now()}]};
+    return {id};
+  },
+  cancelMy(d){ const o = ord(d.id); if (o.status>1) fail('Заказ уже собирается — напишите оператору'); setStatus(o, -1); },
+  review(d){ if (!canReview(d.pid)) fail('Отзыв можно оставить после получения товара'); (DB.reviews[d.pid] = DB.reviews[d.pid]||[]).unshift({n:me().name||'Покупатель', cid:ME, r:d.r, t:d.t, ts:Date.now()}); if (G.reviewBonus) addPoints(ME, G.reviewBonus, 'Бонус за отзыв'); },
+  chatSend(d){
+    const ch = DB.chats[d.key] || chatFor(d.key), admin = S.mode==='admin' && cur();
+    const from = admin ? (role()==='courier' ? 'courier' : 'op') : 'client';
+    const first = !ch.msgs.some(m=>m.from==='client');
+    ch.msgs.push({from, t:d.t, ts:Date.now()});
+    if (admin){ ch.unread = 0; notify(ch.client, `новое сообщение${ch.order?' по заказу №'+ch.order:''}`); }
+    else { ch.unread = (ch.unread||0) + 1; if (first && !ch.order) ch.msgs.push({from:'sys', t:'Сообщение доставлено. Оператор ответит в рабочее время.', ts:Date.now()}); }
+  },
+  chatRead(d){ const ch = DB.chats[d.key]; if (ch) ch.unread = 0; },
+  status(d){ const o = ord(d.id); if (o.status===-1 || o.status===4) fail('Заказ уже закрыт'); if (d.s!==-1 && d.s!==o.status+1) fail('Статус уже изменился — обновите экран'); if (d.s===3 && o.method==='delivery' && !o.courier) fail('Сначала назначьте курьера'); setStatus(o, d.s); },
+  take(d){ const o = ord(d.id); if (o.courier) fail('Заказ уже взял другой курьер'); o.courier = S.as; log(`Курьер взял заказ №${o.id}`); },
+  courier(d){ const o = ord(d.id); o.courier = d.cid || null; log(`Заказ №${o.id}: курьер — ${(staffBy(d.cid)||{name:'не назначен'}).name}`); },
+  paid(d){ ord(d.id).paid = true; log(`Заказ №${d.id}: оплата получена`); },
+  note(d){ ord(d.id).note = d.t; },
+  product(d){
+    const p = JSON.parse(JSON.stringify(d.p));
+    p.variants.forEach(v=>{ ['flavor','color'].forEach(k=>{ v[k] = (v[k]||'').trim() || undefined; }); if (!v.flavor) delete v.fg; v.stock = Math.max(0, Math.round(+v.stock||0)); if (!v.color) delete v.hex; ['mg','ml','price'].forEach(k=>{ if (v[k]==null) delete v[k]; }); });
+    const sig = v => ATTRS.map(([k])=>v[k]??'').join('|');
+    if (new Set(p.variants.map(sig)).size !== p.variants.length) fail('Есть одинаковые варианты — различите их вкусом, крепостью, объёмом или цветом');
+    p.name = p.name.trim(); p.brand = (p.brand||'').trim() || '—';
+    if (!p.id){ p.id = Math.max(0,...DB.products.map(x=>x.id))+1; p.added = Date.now(); DB.products.push(p); log(`Добавлен товар «${p.name}»`); }
+    else { if (!isOwner()){ const old = P(p.id); p.variants.forEach(v=>{ const ov = old.variants.find(x=>x.id===v.id); v.cost = ov ? ov.cost : null; }); }
+      DB.products[DB.products.findIndex(x=>x.id===p.id)] = p; log(`Изменён товар «${p.name}»`); }
+    return {id:p.id};
+  },
+  productDel(d){ const p = P(d.id); DB.products = DB.products.filter(x=>x.id!==d.id); if (p) log(`Удалён товар «${p.name}»`); },
+  upload(d){ return {url:d.data}; },
+  catAdd(d){ DB.cats.push({id:'c'+Date.now().toString(36), name:d.name}); log(`Добавлена категория «${d.name}»`); },
+  catRen(d){ const c = DB.cats.find(x=>x.id===d.id); log(`Категория «${c.name}» → «${d.name}»`); c.name = d.name; },
+  catDel(d){ if (DB.products.some(p=>p.cat===d.id)) fail('В категории есть товары'); DB.cats = DB.cats.filter(c=>c.id!==d.id); log('Удалена категория'); },
+  points(d){ const c = DB.clients[d.cid]; if (c.bonus + d.n < 0) fail('Недостаточно баллов'); addPoints(d.cid, d.n, d.r); log(`${c.name}: ${d.n>0?'+':''}${d.n} баллов (${d.r})`); notify(d.cid, `${d.n>0?'начислено':'списано'} ${Math.abs(d.n)} баллов: ${d.r}`); },
+  block(d){ const c = DB.clients[d.cid]; c.blocked = !c.blocked; log(`${c.name}: ${c.blocked?'заблокирован':'разблокирован'}`); },
+  promoAdd(d){ if (DB.promos.some(p=>p.code===d.code)) fail('Такой код уже есть'); DB.promos.unshift({code:d.code, t:d.t, v:d.v, min:d.min||0, limit:d.limit||0, used:0, active:true}); log(`Создан промокод ${d.code}`); },
+  promoTog(d){ const p = DB.promos.find(x=>x.code===d.code); p.active = !p.active; log(`Промокод ${p.code} ${p.active?'включён':'выключен'}`); },
+  promoDel(d){ DB.promos = DB.promos.filter(x=>x.code!==d.code); log(`Удалён промокод ${d.code}`); },
+  bcast(d){ const a = AUD.find(x=>x[0]===d.aud), list = Object.values(DB.clients).filter(c=>!c.blocked).filter(a[2]); if (!list.length) fail('Нет получателей'); DB.broadcasts.unshift({ts:Date.now(), t:d.t, aud:a[1], n:list.length}); log(`Рассылка «${a[1]}»: ${list.length} получ.`); return {ok:list.length, total:list.length}; },
+  staffAdd(d){ if (DB.staff.some(s=>s.id===d.id)) fail('Уже в команде'); DB.staff.push({id:d.id, name:d.name, role:d.role}); log(`Добавлен сотрудник ${d.name} (${ROLES[d.role]})`); },
+  staffRole(d){ const s = staffBy(d.id); log(`${s.name}: роль ${ROLES[s.role]} → ${ROLES[d.role]}`); s.role = d.role; },
+  staffDel(d){ const s = staffBy(d.id); DB.staff = DB.staff.filter(x=>x.id!==d.id); log(`Удалён сотрудник ${s.name}`); },
+  handover(d){ const l = courierCash(d.cid), t = sum(l,o=>o.total); l.forEach(o=>o.handed = true); log(`Принята касса у ${staffBy(d.cid).name}: ${rub(t)}`); return {total:t}; },
+  settings(d){ Object.assign(G, JSON.parse(JSON.stringify(d.data))); log(`Изменены настройки: ${d.what||'магазин'}`); },
+  setupBot(){ fail('Подключение бота работает только внутри Telegram'); },
+  sendFile(){ fail('Недоступно в демо'); }
+};
+
+/* =====================================================================
+   ДЕЙСТВИЯ ИНТЕРФЕЙСА
+   ===================================================================== */
+const A = {
+  r: render, go, rSheet(){ if (SH) $('#sheet').innerHTML = SH(); },
+  closeSheet(){ $('#sheet-wrap').classList.remove('open'); SH = null; },
+  back(){ stack.pop(); render(); },
+  tab(t){ tab = t; stack = []; render(); window.scrollTo(0,0); },
+  age(ok){
+    if (ok){ S.age = true; save(); render();
+      if (LIVE){ try{ tg.requestWriteAccess && tg.requestWriteAccess(g=>{ if (g) run('writeOk', {}, {silent:true, quiet:true, noRender:true}); }); }catch(e){} }
+    } else { $('#age').innerHTML = `<div class="age-in glass"><div class="age-badge" style="background:linear-gradient(180deg,#ff6b8f,#d6335b)">18+</div><h2>Доступ ограничен</h2><p>Магазин доступен только совершеннолетним.</p></div>`; setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 1500); }
+  },
+  theme(){ A.setTheme(S.theme==='dark'?'light':'dark'); },
+  setTheme(t){ S.theme = t; save(); render(); },
+  q(v){ F.q = v; $('#grid').innerHTML = gridHtml(filtered()); },
+  cat(c){ F.cat = c; render(); },
+  filters(){ openSheet(sheetFilters); },
+  fSet(k){ F.sort = k; A.rSheet(); },
+  fTog(k, i){ const v = filterLists()[k][i], a = F[k]; a.includes(v) ? a.splice(a.indexOf(v),1) : a.push(v); A.rSheet(); },
+  fCount(){ const b = $('#fapply'); if (b) b.textContent = 'Показать ' + filtered().length; },
+  fReset(){ F = {...F, brands:[], fg:[], mg:[], min:'', max:'', sort:'pop'}; A.rSheet(); },
+  fav(id){ const i = S.fav.indexOf(id); i<0 ? S.fav.push(id) : S.fav.splice(i,1); save(); haptic(); render(); },
+  open(id){ const p = P(id); if (!p) return toast('Товар недоступен'); const v = p.variants.find(x=>x.stock>0) || p.variants[0]; PS = {id, sel:selOf(v), qty:1}; go('product'); },
+  quick(id){ const p = P(id); if (p.variants.length===1) addToCart(id, p.variants[0].id, 1) && render(); else A.open(id); },
+  sel(a, i){
+    const p = P(PS.id), val = attrVals(p,a)[i]; PS.sel[a] = val;
+    if (!p.variants.some(x=>ATTRS.every(([k])=>x[k]==null||x[k]===PS.sel[k]))){ const v = p.variants.find(x=>x[a]===val && x.stock>0) || p.variants.find(x=>x[a]===val); PS.sel = selOf(v); }
+    PS.qty = 1; haptic(); render();
+  },
+  pq(d){ const v = curV(); PS.qty = Math.max(1, Math.min(Math.max(1,v.stock), PS.qty + d)); render(); },
+  addCur(){ if (addToCart(PS.id, curV().id, PS.qty)){ PS.qty = 1; render(); } },
+  cq(idx, d){ const i = S.cart[idx], v = V(P(i.pid), i.vid); if (d>0 && i.qty>=v.stock){ toast('Больше нет в наличии'); return; } i.qty += d; if (i.qty<=0) S.cart.splice(idx,1); save(); render(); },
+  clearCart(){ S.cart = []; S.promo = null; S.promoData = null; save(); render(); },
+  async promo(){
+    const c = ($('#promo').value||'').trim().toUpperCase(); if (!c) return;
+    try{ const p = await act('promo', {code:c}, {noRender:true}); S.promo = p.code; S.promoData = p; save(); render(); toast(cartSub() >= (p.min||0) ? 'Промокод применён' : `Промокод действует от ${p.min} руб.`); }catch(e){}
+  },
+  promoOff(){ S.promo = null; S.promoData = null; save(); render(); },
+  useBonus(){ S.useBonus = !S.useBonus; save(); render(); },
+  checkout(){ const p = me(); if (p.blocked) return toast('Оформление недоступно, свяжитесь с поддержкой'); if (G.minOrder && cartSub() < G.minOrder) return toast(`Минимальная сумма заказа — ${rub(G.minOrder)}`);
+    CO = {name:p.name==='Гость'?'':p.name, phone:p.phone, method:'delivery', city:G.cities.includes(p.city)?p.city:G.cities[0], address:p.address, time:G.slots[0], pay:'cash', comment:'', agree:false}; go('checkout'); },
+  co(k, v){ CO[k] = v; render(); },
+  slot(i){ CO.time = G.slots[i]; render(); },
+  share(){
+    if (tg && tg.requestContact){ try{ tg.requestContact((ok, res)=>{ const ph = res && res.responseUnsafe && res.responseUnsafe.contact && res.responseUnsafe.contact.phone_number; if (ok && ph){ CO.phone = '+'+String(ph).replace(/^\+/,''); render(); } else if (ok) toast('Номер отправлен боту'); }); return; }catch(e){} }
+    toast('Работает внутри Telegram');
+  },
+  async place(){
+    if (!CO.name.trim()) return toast('Укажите имя');
+    if (CO.phone.replace(/\D/g,'').length < 6) return toast('Укажите телефон');
+    if (CO.method==='delivery' && !CO.address.trim()) return toast('Укажите адрес');
+    if (!CO.agree) return toast('Подтвердите возраст 18+');
+    for (const i of S.cart){ const v = V(P(i.pid), i.vid); if (!v || v.stock < i.qty) return toast('Часть товаров закончилась — проверьте корзину'); }
+    const c = calc(delCost());
+    try{
+      const r = await act('place', {items:S.cart.map(i=>({vid:i.vid, qty:i.qty})), promo:c.prOk?S.promo:null, useBonus:S.useBonus, name:CO.name.trim(), phone:CO.phone.trim(),
+        method:G.pickupOn?CO.method:'delivery', city:CO.city, address:CO.address.trim(), time:CO.time, pay:CO.pay, comment:CO.comment.trim()}, {noRender:true});
+      S.cart = []; S.promo = null; S.promoData = null; S.useBonus = false; save();
+      stack = []; haptic('heavy'); go('success', {id:r.id});
+      if (!LIVE) setTimeout(()=>notify(ME, `заказ №${r.id} принят`), 400);
+    }catch(e){ render(); }
+  },
+  goOrder(id){ stack = stack.filter(s=>s.name!=='success'); if (!stack.length || stack.at(-1).name!=='orders') stack.push({name:'orders'}); go('order', {id}); },
+  async cancelMy(id){ if (!confirm('Отменить заказ №'+id+'?')) return; await run('cancelMy', {id}); },
+  repeat(id){ const o = DB.orders.find(x=>x.id===id); let n = 0; o.items.forEach(i=>{ const v = V(P(i.pid), i.vid); if (v && v.stock>0){ const ex = S.cart.find(c=>c.vid===i.vid); const q = Math.min(i.qty, v.stock-(ex?ex.qty:0)); if (q>0){ ex ? ex.qty += q : S.cart.push({pid:i.pid, vid:i.vid, qty:q}); n++; } } }); save(); A.tab('cart'); toast(n ? 'Товары добавлены в корзину' : 'Товаров нет в наличии'); },
+  chat(key){ key = String(key); if (!DB.chats[key]) DB.chats[key] = {client:ME, order:/^\d+$/.test(key)?+key:null, unread:0, msgs:[]}; go('chat', {key}); scrollEnd(); },
+  async send(key){
+    const el = $('#msg'), t = el.value.trim(); if (!t) return;
+    el.value = '';
+    try{ await act('chatSend', {key, t}); }catch(e){ const m = $('#msg'); if (m) m.value = t; }
+    scrollEnd(); setTimeout(()=>{ const m = $('#msg'); m && m.focus(); }, 40);
+  },
+  review(pid){ RV = {pid, r:5, t:''}; openSheet(sheetReview); },
+  rvStar(n){ RV.r = n; A.rSheet(); haptic(); },
+  async rvSend(){ if (RV.t.trim().length < 3) return toast('Напишите пару слов'); try{ await act('review', {pid:RV.pid, r:RV.r, t:RV.t.trim()}, {noRender:true}); A.closeSheet(); render(); toast(G.reviewBonus?`Спасибо! +${G.reviewBonus} баллов`:'Спасибо за отзыв!'); }catch(e){} },
+  async saveData(){ try{ await act('profile', {name:$('#d-name').value.trim(), phone:$('#d-phone').value.trim(), city:$('#d-city').value, address:$('#d-addr').value.trim()}, {noRender:true}); A.back(); toast('Сохранено'); }catch(e){} },
+  copyRef(){ const l = refLink(ME); try{ navigator.clipboard.writeText(l).then(()=>toast('Ссылка скопирована'), ()=>toast(esc(l))); }catch(e){ toast(esc(l)); } },
+  shareRef(){ const u = 'https://t.me/share/url?url='+encodeURIComponent(refLink(ME))+'&text='+encodeURIComponent(`Держи ${G.refFriend} бонусных баллов на первый заказ в ${G.name} 🎁`); try{ tg.openTelegramLink(u); }catch(e){ window.open(u, '_blank'); } },
+  async refCode(){ const v = ($('#refcode').value||'').trim().replace(/^ref_/,''); if (!v) return; try{ await act('refCode', {code:v}); toast(`Код принят! +${G.refFriend} баллов на первый заказ`); }catch(e){} },
+  reset(){ if (LIVE) return; try{ localStorage.removeItem(DB_KEY); localStorage.removeItem(UI_KEY); }catch(e){} location.reload(); },
+
+  /* ----- админ ----- */
+  admin(){ S.mode = 'admin'; S.as = ME; stack = []; save(); render(); window.scrollTo(0,0); },
+  shop(){ S.mode = 'shop'; stack = []; tab = 'profile'; save(); render(); },
+  as(id){ if (LIVE) return; S.as = id; S.atab = null; stack = []; save(); render(); toast('Вы видите панель как: '+ROLES[role()]); },
+  atab(t){ S.atab = t; stack = []; save(); render(); window.scrollTo(0,0); },
+  per(k){ S.per = k; save(); render(); },
+  aof(k){ S.aof = k; save(); if (!stack.length) render(); },
+  aoq(v){ S.aoq = v; const f = AOF.find(x=>x[0]===S.aof)||AOF[0], q = v.trim().toLowerCase(); const list = DB.orders.filter(f[2]).filter(o=>!q || String(o.id).includes(q) || (o.phone||'').replace(/\D/g,'').includes(q.replace(/\D/g,'')||'§') || (o.name||'').toLowerCase().includes(q)).sort((a,b)=>b.ts-a.ts); $('#olist').innerHTML = list.length?list.map(orderLi).join(''):empty('box','Заказов нет',''); },
+  aOrder(id){ go('aorder', {id}); },
+  async st(id, s){ if (s===-1 && !confirm('Отменить заказ №'+id+'? Товары вернутся на склад.')) return; await run('status', {id, s}); },
+  async take(id){ try{ await act('take', {id}); toast('Заказ ваш'); }catch(e){} },
+  setCourier(id, cid){ run('courier', {id, cid}); },
+  paid(id){ run('paid', {id}); },
+  note(id, v){ run('note', {id, t:v}, {silent:true, noRender:true}); },
+  map(id){ const o = DB.orders.find(x=>x.id===id); openLink('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(o.city+', '+o.address)); },
+  achat(key){ key = String(key); const ch = DB.chats[key]; if (!ch) return toast('Чат не найден'); go('achat', {key}); scrollEnd(); if (ch.unread){ ch.unread = 0; run('chatRead', {key}, {silent:true, quiet:true, noRender:true}); } },
+  agq(v){ S.agq = v; const q = v.trim().toLowerCase(); $('#glist').innerHTML = goodsList(DB.products.filter(p=>(S.agc==='all'||p.cat===S.agc) && (!q || (p.name+' '+p.brand).toLowerCase().includes(q))).sort((a,b)=>b.added-a.added)); },
+  agc(c){ S.agc = c; render(); },
+  edit(id){ const p = id ? P(id) : null; ED = p ? JSON.parse(JSON.stringify(p)) : {id:null, cat:S.agc!=='all'?S.agc:(DB.cats[0]||{}).id, brand:'', name:'', price:null, old:null, hue:Math.floor(Math.random()*360), tags:[], photos:[], hidden:false, desc:'', variants:[newVariant()]}; go('edit'); },
+  edTag(t){ const i = ED.tags.indexOf(t); i<0 ? ED.tags.push(t) : ED.tags.splice(i,1); render(); },
+  edHide(){ ED.hidden = !ED.hidden; render(); },
+  addVar(){ const last = ED.variants.at(-1), v = newVariant(); if (last){ v.fg = last.fg; v.mg = last.mg; v.ml = last.ml; v.cost = last.cost; } ED.variants.push(v); render(); scrollEnd(); },
+  delVar(i){ ED.variants.splice(i,1); render(); },
+  async addPhotos(files){
+    for (const f of files){ const d = await readImg(f); if (!d) continue;
+      if (LIVE){ try{ const r = await act('upload', {data:d}, {noRender:true}); ED.photos.push(r.url); }catch(e){} } else ED.photos.push(d); }
+    render();
+  },
+  delPhoto(i){ ED.photos.splice(i,1); render(); },
+  async saveProduct(){
+    if (!(ED.name||'').trim()) return toast('Укажите название');
+    if (!(ED.price>0)) return toast('Укажите цену');
+    if (!ED.cat) return toast('Выберите категорию');
+    try{ await act('product', {p:ED}, {noRender:true}); A.back(); toast('Товар сохранён'); }catch(e){}
+  },
+  async delProduct(){ if (!confirm('Удалить товар «'+ED.name+'»? История заказов сохранится.')) return; const id = ED.id; try{ await act('productDel', {id}, {noRender:true}); S.cart = S.cart.filter(i=>i.pid!==id); save(); A.back(); toast('Удалено'); }catch(e){} },
+  cats(){ openSheet(sheetCats); },
+  async renCat(i, v){ v = v.trim(); if (!v) return; await run('catRen', {id:DB.cats[i].id, name:v}); A.rSheet(); },
+  async delCat(i){ await run('catDel', {id:DB.cats[i].id}); A.rSheet(); },
+  async addCat(){ const v = ($('#newcat').value||'').trim(); if (!v) return; await run('catAdd', {name:v}); A.rSheet(); },
+  acq(v){ S.acq = v; const q = v.trim().toLowerCase(); const list = Object.values(DB.clients).filter(c=>!q || (c.name||'').toLowerCase().includes(q) || (c.phone||'').replace(/\D/g,'').includes(q.replace(/\D/g,'')||'§')).map(c=>({c, s:clientStats(c.id)})).sort((a,b)=>b.s.spent-a.s.spent); $('#clist').innerHTML = list.map(({c,s})=>`<button class="li glass" onclick="A.aClient('${c.id}')"><div class="ava sm">${esc((c.name||'?')[0])}</div><div class="m"><b>${esc(c.name||'Без имени')}</b><span>${esc(c.phone||'нет телефона')} · заказов: ${s.n} · баллы: ${c.bonus}</span></div><div class="r">${rub(s.spent)}</div></button>`).join(''); },
+  aClient(id){ go('aclient', {id}); },
+  async adjPts(id){ const n = Math.round(+($('#pts').value||0)), r = ($('#ptsr').value||'').trim() || (n>0?'Начислено администратором':'Списано администратором'); if (!n) return toast('Введите число'); await run('points', {cid:id, n, r}); },
+  block(id){ run('block', {cid:id}); },
+  promoEdit(){ PE = {code:'', t:'pct', v:null, min:null, limit:null}; openSheet(sheetPromo); },
+  async promoSave(){ if (!PE.code) return toast('Введите код'); if (!(PE.v>0)) return toast('Укажите размер скидки'); if (PE.t==='pct' && PE.v>90) return toast('Слишком большой процент');
+    try{ await act('promoAdd', {...PE}, {noRender:true}); A.closeSheet(); render(); }catch(e){} },
+  promoTog(i){ run('promoTog', {code:DB.promos[i].code}); },
+  promoDel(i){ const p = DB.promos[i]; if (!confirm('Удалить промокод '+p.code+'?')) return; run('promoDel', {code:p.code}); },
+  async bcSend(){ if (BC.t.trim().length<3) return toast('Напишите текст'); if (!confirm('Отправить рассылку?')) return;
+    try{ const r = await act('bcast', {aud:BC.aud, t:BC.t.trim()}, {noRender:true}); BC.t = ''; render(); toast(r && r.total ? `Доставлено ${r.ok} из ${r.total}` : 'Рассылка отправлена'); }catch(e){} },
+  staffRole(i, r){ run('staffRole', {id:DB.staff[i].id, role:r}); },
+  staffDel(i){ const s = DB.staff[i]; if (!confirm('Убрать доступ у '+s.name+'?')) return; run('staffDel', {id:s.id}); },
+  async staffAdd(){ const id = ($('#sf-id').value||'').trim(), name = ($('#sf-name').value||'').trim(), r = $('#sf-role').value;
+    if (!/^\d{3,}$/.test(id)) return toast('Telegram ID — только цифры'); if (!name) return toast('Укажите имя');
+    try{ await act('staffAdd', {id, name, role:r}); toast('Сотрудник добавлен'); }catch(e){} },
+  async handover(cid){ try{ const r = await act('handover', {cid}); toast('Касса принята' + (r && r.total!=null ? ': '+rub(r.total) : '')); }catch(e){} },
+  async saveSet(what){
+    const n = ['deliveryOther','minOrder','lowStock','cashback','maxBonus','welcome','reviewBonus','refFriend','refInviter','refMin'];
+    for (const k of n){ if (SE[k]==null || isNaN(SE[k]) || SE[k]<0) return toast('Проверьте числовые поля'); }
+    if (SE.maxBonus>100) return toast('Оплата баллами — не больше 100%');
+    if (!SE.cities.length || !SE.slots.length) return toast('Нужен хотя бы один город и интервал');
+    if (SE.pickupOn && !(SE.pickup||'').trim()) return toast('Укажите адрес самовывоза');
+    if (SE.appUrl && !/^https:\/\//.test(SE.appUrl)) return toast('Ссылка должна начинаться с https://');
+    if (!SE.cities.includes(SE.freeCity)) SE.freeCity = SE.cities[0];
+    try{ await act('settings', {data:SE, what}, {noRender:true}); SE = JSON.parse(JSON.stringify(G)); render(); toast('Сохранено'); }catch(e){}
+  },
+  async setupBot(){ try{ const r = await act('setupBot', {}, {noRender:true}); toast(r && r.menu ? 'Бот подключён ✅' : 'Вебхук подключён ✅'); }catch(e){} },
+  export(){ doExport(); }
+};
+/* страницы, которым нужен черновик при открытии */
+const _go = go;
+go = function(name, params){ if (['settings','loyal','refset'].includes(name)) SE = JSON.parse(JSON.stringify(G)); if (name==='bcast') BC = {aud:'all', t:''}; _go(name, params); };
+A.go = go;
+
+/* ---------- запуск ---------- */
+function loadHtml(){
+  return `<div class="center" style="padding-top:30vh">${LOAD_ERR
+    ? `<div class="ei glass" style="width:76px;height:76px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;color:var(--bad)">${ic('alert')}</div><h3>Не удалось загрузить магазин</h3><p class="desc" style="margin:8px 0 20px">${esc(LOAD_ERR)}</p><button class="btn primary" style="margin:0 auto" onclick="boot()">Повторить</button>`
+    : `<div class="logo" style="width:64px;height:64px;border-radius:22px;margin:0 auto 16px"><svg class="i" viewBox="0 0 24 24" style="width:34px;height:34px">${IC.cloud}</svg></div><p class="desc">Загрузка…</p>`}</div>`;
+}
+async function boot(){
+  LOAD_ERR = ''; render();
+  try{ await act('boot', {}, {noRender:true, quiet:true, silent:true}); }
+  catch(e){ LOAD_ERR = /fetch|network|load failed/i.test(e.message) ? 'Нет связи с сервером. Проверьте интернет.' : e.message; render(); return; }
+  render(); deepLink();
+}
+function deepLink(){
+  const qp = new URLSearchParams(location.search), o = qp.get('o'), c = qp.get('c');
+  if (o){ const ord_ = DB.orders.find(x=>x.id===+o); if (ord_){ if (cur() && ord_.client!==ME){ S.mode = 'admin'; stack = []; go('aorder', {id:ord_.id}); } else { S.mode = 'shop'; tab = 'profile'; stack = [{name:'orders'}]; go('order', {id:ord_.id}); } } }
+  else if (c){ const ch = DB.chats[c]; if (cur() && ch && ch.client!==ME){ S.mode = 'admin'; stack = []; A.achat(c); } else { S.mode = 'shop'; tab = 'profile'; stack = []; A.chat(c); } }
+}
+function poll(){
+  if (document.hidden || BUSY || !DB) return;
+  const top = stack[stack.length-1], onChat = top && (top.name==='chat' || top.name==='achat');
+  if (Date.now() - lastSync < (onChat ? 5000 : 30000)) return;
+  const a = document.activeElement, typing = a && /INPUT|TEXTAREA|SELECT/.test(a.tagName);
+  const safe = !SH && !typing && (!top || ['chat','achat','aorder','order','orders','achats','low','aclient','points','ref'].includes(top.name));
+  const y = window.scrollY;
+  act('boot', {}, {silent:true, quiet:true, noRender:!safe}).then(()=>{ if (safe){ onChat ? scrollEnd() : window.scrollTo(0, y); } }).catch(()=>{ lastSync = Date.now(); });
+}
+
+try{ tg && tg.BackButton.onClick(()=>{ if ($('#sheet-wrap').classList.contains('open')) A.closeSheet(); else if (stack.length) A.back(); }); }catch(e){}
+if (LIVE){ S.as = ME; boot(); setInterval(poll, 2500); }
+else { ensureClient(); render(); }
+</script>
+</body>
+</html>
