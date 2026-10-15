@@ -164,6 +164,7 @@ body.light #sheet{background:linear-gradient(140deg,rgba(255,255,255,.97),rgba(2
 .age-badge{width:88px;height:88px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;font-size:28px;font-weight:800;box-shadow:0 12px 30px rgba(38,114,234,.5)}
 #toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-180%);z-index:120;width:max-content;max-width:calc(100% - 32px);padding:12px 18px;border-radius:22px;font-weight:600;font-size:14px;transition:transform .3s;background:rgba(18,30,68,.9);color:#fff;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);box-shadow:0 10px 30px rgba(0,0,0,.3)}
 #toast.show{transform:translate(-50%,0)}
+#errbox{position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top));z-index:140;display:none;white-space:pre-wrap;font:12px/1.4 ui-monospace,Menlo,monospace;color:#fff;background:rgba(200,30,70,.95);padding:12px 14px;border-radius:16px;max-height:40vh;overflow:auto}
 #busy{position:fixed;top:0;left:0;right:0;height:3px;z-index:130;display:none;background:linear-gradient(90deg,transparent,#5aa8ff,transparent);background-size:50% 100%;background-repeat:no-repeat;animation:busy 1s linear infinite}
 @keyframes busy{from{background-position:-50% 0}to{background-position:150% 0}}
 .tl{border-radius:24px;padding:16px}
@@ -278,11 +279,18 @@ body.light .bcard{background:linear-gradient(140deg,#5aa8ff,#2672ea)!important}
 <div id="age"></div>
 <div id="toast"></div>
 <div id="busy"></div>
+<div id="errbox" onclick="this.style.display='none'"></div>
 <script>
 /* =====================================================================
    CLOUD VAPE — Telegram Mini App (прототип: данные хранятся в браузере;
    на этапе 3 этот же DB-объект переедет в Supabase)
    ===================================================================== */
+/* совместимость со старыми iPhone */
+if (!Array.prototype.at) Object.defineProperty(Array.prototype, 'at', {value:function(n){ n = Math.trunc(n)||0; if (n<0) n += this.length; return this[n]; }, writable:true, configurable:true});
+/* показываем ошибки на экране, чтобы их можно было прислать скриншотом */
+function showErr(e){ const el = document.getElementById('errbox'); if (!el) return; el.style.display = 'block'; el.textContent = '⚠️ ' + ((e && e.message) || e) + '\n' + String((e && e.stack) || '').split('\n').slice(0,4).join('\n') + '\n(нажмите, чтобы скрыть)'; }
+window.addEventListener('error', ev => showErr(ev.error || ev.message));
+window.addEventListener('unhandledrejection', ev => showErr(ev.reason));
 const tg = window.Telegram && window.Telegram.WebApp;
 try{ tg && tg.ready(); tg && tg.expand(); }catch(e){}
 const U = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || null;
@@ -1294,6 +1302,10 @@ const TABS = {catalog:vCatalog, fav:vFav, cart:vCart, profile:vProfile};
 const AVIEWS = {dash:aDash, orders:aOrders, goods:aGoods, clients:aClients, more:aMore, deliv:aDeliv, cash:aCash};
 const PAGES = {product:pProduct, checkout:pCheckout, success:pSuccess, orders:pOrders, order:pOrder, chat:pChat, mydata:pMyData, about:pAbout, points:pPoints, ref:pRef,
   aorder:aOrderPage, edit:aEdit, low:aLow, aclient:aClientPage, achats:aChats, achat:aChatPage, promos:aPromos, bcast:aBcast, staff:aStaff, settings:aSettings, loyal:aLoyal, refset:aRefSet, log:aLog};
+function safeView(fn, arg, isPage){
+  try{ if (!fn) throw new Error('Экран не найден'); return fn(arg); }
+  catch(e){ showErr(e); return (isPage ? head('Ошибка') : '') + `<div class="box glass" style="margin-top:20px"><p class="desc">Не удалось открыть экран. Сделайте скриншот красного сообщения сверху и пришлите его разработчику.</p></div>`; }
+}
 function render(){
   if (!DB){ $('#page').style.display='none'; $('#main').style.display='block'; $('#tabs').style.display='none'; $('#main').innerHTML = loadHtml(); return; }
   const admin = S.mode==='admin' && cur();
@@ -1301,14 +1313,14 @@ function render(){
   document.body.classList.toggle('light', S.theme==='light');
   document.body.classList.toggle('admin', !!admin);
   const top = stack[stack.length-1];
-  if (top){ $('#main').style.display='none'; $('#page').style.display='block'; $('#page').innerHTML = PAGES[top.name](top.params||{}); $('#tabs').style.display='none'; }
+  if (top){ $('#main').style.display='none'; $('#tabs').style.display='none'; $('#page').style.display='block'; $('#page').innerHTML = safeView(PAGES[top.name], top.params||{}, true); }
   else {
     $('#page').style.display='none'; $('#main').style.display='block'; $('#tabs').style.display='flex';
-    if (admin){ const tabs = ATABS[role()]; if (!tabs.some(t=>t[0]===S.atab)) S.atab = tabs[0][0]; $('#main').innerHTML = AVIEWS[S.atab]();
+    if (admin){ const tabs = ATABS[role()]; if (!tabs.some(t=>t[0]===S.atab)) S.atab = tabs[0][0]; $('#main').innerHTML = safeView(AVIEWS[S.atab]);
       const nNew = DB.orders.filter(o=>o.status===0).length, u = unreadChats();
       $('#tabs').innerHTML = tabs.map(([k,i,l])=>{ const b = k==='orders'&&nNew ? nNew : k==='more'&&u&&isOwner() ? u : k==='deliv' ? DB.orders.filter(o=>o.courier===S.as&&(o.status===2||o.status===3)).length : 0;
         return `<button class="tab ${S.atab===k?'on':''}" onclick="A.atab('${k}')">${ic(i)}<span>${l}</span>${b?`<i class="badge">${b}</i>`:''}</button>`; }).join('');
-    } else { $('#main').innerHTML = TABS[tab](); const n = cartCount();
+    } else { $('#main').innerHTML = safeView(TABS[tab]); const n = cartCount();
       $('#tabs').innerHTML = [['catalog','grid','Каталог'],['fav','heart','Избранное'],['cart','bag','Корзина'],['profile','user','Профиль']]
         .map(([k,i,l])=>`<button class="tab ${tab===k?'on':''}" onclick="A.tab('${k}')">${ic(i)}<span>${l}</span>${k==='cart'&&n?`<i class="badge">${n}</i>`:''}</button>`).join(''); }
   }
